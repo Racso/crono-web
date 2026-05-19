@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>crono-lang</title>
+  <meta name="description" content="A virtual machine and language ecosystem. Precise. Fast. Yours.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne+Mono&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400;1,600&family=Figtree:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="/" class="nav-logo">crono-lang</a>
+    <div class="nav-links">
+      <a href="crono-vm.html">crono-vm</a>
+      <a href="crono-sharp.html">crono-sharp</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <p class="hero-eyebrow">an ecosystem</p>
+      <h1 class="hero-headline">
+        a vm.<br>
+        a language.<br>
+        a foundation.
+      </h1>
+      <p class="hero-body">
+        crono-lang is a tightly designed stack: a bytecode virtual machine
+        with precise semantics, and crono-sharp — a statically typed language
+        that compiles to it. built for clarity, performance, and extensibility.
+      </p>
+      <div class="hero-cta">
+        <a href="crono-vm.html" class="btn-primary">explore crono-vm</a>
+        <a href="crono-sharp.html" class="btn-ghost">explore crono-sharp</a>
+      </div>
+    </div>
+    <div class="hero-accent" aria-hidden="true">
+      <div class="accent-glyph">λ</div>
+    </div>
+  </section>
+
+  <!-- PILLARS -->
+  <section class="pillars">
+    <a href="crono-vm.html" class="pillar">
+      <div class="pillar-tag">core</div>
+      <h2 class="pillar-name">crono-vm</h2>
+      <p class="pillar-desc">
+        A stack-based bytecode virtual machine. Mark-and-sweep GC,
+        native FFI via DynCall, a module system, and ~45 precisely
+        defined opcodes. The foundation everything else runs on.
+      </p>
+      <span class="pillar-link">read the docs →</span>
+    </a>
+
+    <a href="crono-sharp.html" class="pillar">
+      <div class="pillar-tag">language</div>
+      <h2 class="pillar-name">crono-sharp</h2>
+      <p class="pillar-desc">
+        A statically typed, C-like language that compiles to crono-vm
+        bytecode. Classes, inheritance, generics, interfaces, and a
+        full language server built in.
+      </p>
+      <span class="pillar-link">read the docs →</span>
+    </a>
+
+    <div class="pillar pillar--future">
+      <div class="pillar-tag">coming</div>
+      <h2 class="pillar-name">crono-lang <span class="tag-wip">wip</span></h2>
+      <p class="pillar-desc">
+        A new language — designed from scratch with its own syntax
+        and philosophy — targeting crono-vm. Currently being designed.
+      </p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="footer-sig">Made with <span class="spade">♠</span> by Racso</span>
+  </footer>
+
+</body>
+</html>
