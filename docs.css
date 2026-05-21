@@ -2,22 +2,14 @@
    DOCS LAYOUT — shared by crono-vm.html and crono-sharp.html
    ================================================================ */
 
-.nav-active {
-  color: var(--vanilla) !important;
-}
-.nav-active::after {
-  width: 100% !important;
-}
-
 /* ----------------------------------------------------------------
    Docs shell
    ---------------------------------------------------------------- */
 .docs-layout {
   display: grid;
   grid-template-columns: 220px 1fr;
-  min-height: calc(100vh - 80px);
-  margin-top: 80px; /* nav height */
-  border-top: 1px solid var(--n3);
+  min-height: calc(100vh - 52px);
+  margin-top: 52px; /* nav height */
 }
 
 /* ----------------------------------------------------------------
@@ -25,36 +17,35 @@
    ---------------------------------------------------------------- */
 .docs-sidebar {
   border-right: 1px solid var(--n3);
-  padding: 44px 0;
+  padding: 36px 0;
   position: sticky;
-  top: 80px;
-  height: calc(100vh - 80px);
+  top: 52px;
+  height: calc(100vh - 52px);
   overflow-y: auto;
 }
 
 .sidebar-section {
-  margin-bottom: 32px;
-  padding: 0 28px;
+  margin-bottom: 28px;
+  padding: 0 24px;
 }
 
 .sidebar-label {
   font-family: 'Syne Mono', monospace;
-  font-size: 10px;
+  font-size: 9px;
   color: var(--n4);
-  letter-spacing: 0.2em;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
   margin-bottom: 10px;
 }
 
 .sidebar-link {
   display: block;
-  font-family: 'Figtree', sans-serif;
-  font-size: 13px;
+  font-family: 'Syne Mono', monospace;
+  font-size: 12px;
   color: var(--n4);
   padding: 5px 0;
   transition: color 0.15s;
-  font-weight: 300;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
 }
 
 .sidebar-link:hover {
@@ -62,7 +53,7 @@
 }
 
 .sidebar-link.is-active {
-  color: var(--volcano);
+  color: var(--crono);
 }
 
 /* ----------------------------------------------------------------
@@ -81,9 +72,9 @@
 
 .docs-tag {
   font-family: 'Syne Mono', monospace;
-  font-size: 10px;
-  color: var(--volcano);
-  letter-spacing: 0.2em;
+  font-size: 9px;
+  color: var(--crono);
+  letter-spacing: 0.25em;
   text-transform: uppercase;
   margin-bottom: 16px;
 }
@@ -98,9 +89,10 @@
 }
 
 .docs-subtitle {
-  font-size: 17px;
+  font-family: 'Figtree', sans-serif;
+  font-size: 15px;
   color: var(--n4);
-  line-height: 1.75;
+  line-height: 1.8;
   max-width: 560px;
   font-weight: 300;
 }
@@ -116,8 +108,8 @@
   border: 1px dashed var(--n3);
   color: var(--n4);
   font-family: 'Syne Mono', monospace;
-  font-size: 13px;
-  letter-spacing: 0.05em;
+  font-size: 12px;
+  letter-spacing: 0.08em;
 }
 
 /* ----------------------------------------------------------------
@@ -126,6 +118,7 @@
 @media (max-width: 900px) {
   .docs-layout {
     grid-template-columns: 1fr;
+    margin-top: 52px;
   }
 
   .docs-sidebar {
@@ -133,7 +126,7 @@
     height: auto;
     border-right: none;
     border-bottom: 1px solid var(--n3);
-    padding: 28px;
+    padding: 24px 20px;
     display: flex;
     flex-wrap: wrap;
     gap: 0;

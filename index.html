@@ -7,7 +7,7 @@
   <meta name="description" content="A virtual machine and language ecosystem. Precise. Fast. Yours.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne+Mono&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400;1,600&family=Figtree:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne+Mono&family=Figtree:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -33,30 +33,28 @@
   <!-- HERO -->
   <section class="hero">
     <div class="hero-inner">
-      <p class="hero-eyebrow">an ecosystem</p>
+      <p class="hero-eyebrow">ecosystem — v0.1</p>
       <h1 class="hero-headline">
+        <em>CRONO-LANG</em>
         a vm.<br>
         a language.<br>
         a foundation.
       </h1>
       <p class="hero-body">
-        crono-lang is a tightly designed stack: a bytecode virtual machine
-        with precise semantics, and crono-sharp — a statically typed language
-        that compiles to it. built for clarity, performance, and extensibility.
+        A tightly designed stack: a bytecode virtual machine with precise
+        semantics, and crono-sharp — a statically typed language that compiles
+        to it. Built for clarity, performance, and extensibility.
       </p>
       <div class="hero-cta">
-        <a href="crono-vm.html" class="btn-primary">explore crono-vm</a>
-        <a href="crono-sharp.html" class="btn-ghost">explore crono-sharp</a>
+        <a href="crono-vm.html" class="btn-primary">→ crono-vm</a>
+        <a href="crono-sharp.html" class="btn-ghost">→ crono-sharp</a>
       </div>
-    </div>
-    <div class="hero-accent" aria-hidden="true">
-      <div class="accent-glyph">λ</div>
     </div>
   </section>
 
   <!-- PILLARS -->
   <section class="pillars">
-    <a href="crono-vm.html" class="pillar">
+    <a href="crono-vm.html" class="pillar" data-index="§ 1">
       <div class="pillar-tag">core</div>
       <h2 class="pillar-name">crono-vm</h2>
       <p class="pillar-desc">
@@ -67,7 +65,7 @@
       <span class="pillar-link">read the docs →</span>
     </a>
 
-    <a href="crono-sharp.html" class="pillar">
+    <a href="crono-sharp.html" class="pillar" data-index="§ 2">
       <div class="pillar-tag">language</div>
       <h2 class="pillar-name">crono-sharp</h2>
       <p class="pillar-desc">
@@ -78,7 +76,7 @@
       <span class="pillar-link">read the docs →</span>
     </a>
 
-    <div class="pillar pillar--future">
+    <div class="pillar pillar--future" data-index="§ 3">
       <div class="pillar-tag">coming</div>
       <h2 class="pillar-name">crono-lang <span class="tag-wip">wip</span></h2>
       <p class="pillar-desc">
@@ -91,6 +89,7 @@
   <!-- FOOTER -->
   <footer>
     <span class="footer-sig">Made with <span class="spade">♠</span> by Racso</span>
+    <span class="footer-build">crono-lang / crono.rac.so</span>
   </footer>
 
 </body>
