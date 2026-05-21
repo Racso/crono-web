@@ -10,6 +10,7 @@
   --n6:        #edf1f5;
   --vanilla:   #fefdfa;
 
+  --crono:     #c07848;
   --volcano:   #f33c2c;
   --vitellary: #f0a030;
   --viridian:  #1fa8a4;
@@ -68,13 +69,17 @@ nav {
 }
 
 .nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
   font-family: 'Syne Mono', monospace;
   font-size: 14px;
-  color: var(--volcano);
+  color: var(--vanilla);
   letter-spacing: 0.02em;
   transition: opacity 0.2s;
 }
 .nav-logo:hover { opacity: 0.7; }
+.nav-logo .accent { color: var(--crono); }
 
 .nav-links {
   display: flex;
@@ -97,7 +102,7 @@ nav {
   left: 0;
   width: 0;
   height: 1px;
-  background: var(--volcano);
+  background: var(--crono);
   transition: width 0.25s ease;
 }
 
@@ -128,7 +133,7 @@ nav {
   right: -10%;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(243, 60, 44, 0.06) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(192, 120, 72, 0.06) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -140,7 +145,7 @@ nav {
 .hero-eyebrow {
   font-family: 'Syne Mono', monospace;
   font-size: 12px;
-  color: var(--volcano);
+  color: var(--crono);
   letter-spacing: 0.15em;
   text-transform: uppercase;
   margin-bottom: 28px;
@@ -176,16 +181,16 @@ nav {
   font-family: 'Syne Mono', monospace;
   font-size: 13px;
   color: var(--void);
-  background: var(--volcano);
+  background: var(--crono);
   padding: 12px 24px;
-  border: 1px solid var(--volcano);
+  border: 1px solid var(--crono);
   transition: background 0.2s, color 0.2s;
   letter-spacing: 0.02em;
 }
 
 .btn-primary:hover {
   background: transparent;
-  color: var(--volcano);
+  color: var(--crono);
 }
 
 .btn-ghost {
@@ -265,7 +270,7 @@ a.pillar:hover {
 .pillar-tag {
   font-family: 'Syne Mono', monospace;
   font-size: 10px;
-  color: var(--volcano);
+  color: var(--crono);
   letter-spacing: 0.2em;
   text-transform: uppercase;
 }
@@ -302,7 +307,7 @@ a.pillar:hover {
 .pillar-link {
   font-family: 'Syne Mono', monospace;
   font-size: 12px;
-  color: var(--volcano);
+  color: var(--crono);
   letter-spacing: 0.05em;
   margin-top: 8px;
   transition: opacity 0.2s;
