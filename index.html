@@ -229,11 +229,11 @@ html, body {
   border-bottom: 1px solid var(--n3);
 }
 
-.quad[data-col="3"] {
+.quad[data-col="5"] {
   border-right: none;
 }
 
-.quad[data-row="4"] {
+.quad[data-row="3"] {
   border-bottom: none;
 }
 
@@ -261,11 +261,13 @@ html, body {
 
 .quad[data-col="0"] .quad-fig,
 .quad[data-col="1"] .quad-fig,
-.quad[data-col="2"] .quad-fig {
+.quad[data-col="2"] .quad-fig,
+.quad[data-col="3"] .quad-fig,
+.quad[data-col="4"] .quad-fig {
   left: calc(var(--pw, 36px) / 2);
 }
 
-.quad[data-col="3"] .quad-fig {
+.quad[data-col="5"] .quad-fig {
   right: calc(var(--pw, 36px) / 2);
   flex-direction: row-reverse;
 }
@@ -281,11 +283,11 @@ html, body {
   letter-spacing: 0.16em;
 }
 
-.quad[data-col="3"] .quad-sec {
+.quad[data-col="5"] .quad-sec {
   left: calc(var(--pw, 36px) / 2);
 }
 
-.quad:not([data-col="3"]) .quad-sec {
+.quad:not([data-col="5"]) .quad-sec {
   right: calc(var(--pw, 36px) / 2);
 }
 
@@ -294,8 +296,6 @@ html, body {
 }
 
 /* inner padding — content area, scrolls only as last resort */
-/* top = 1 full grid unit (clears the abs-positioned quad-fig label at top:16px) */
-/* left/right/bottom = half grid unit — matches label's own left:pw/2 offset */
 .qi {
   flex:1;
   display:flex;
@@ -320,13 +320,12 @@ html, body {
   border-radius: 2px;
 }
 
-.quad[data-col="3"] .qi {
+.quad[data-col="5"] .qi {
   align-items: flex-end;
   text-align: right;
 }
 
 /* ── CONTENT ATOMS ──────────────────────────────── */
-/* Font sizes scale with --qh (height is the limiting axis) */
 .tag {
   font-size: clamp(7px, calc(var(--qh, 560px) * 0.013), 9px);
   color: var(--crono);
@@ -361,7 +360,7 @@ html, body {
   margin-bottom: clamp(12px, calc(var(--qh, 560px) * 0.029), 20px);
 }
 
-.quad[data-col="3"] .cell-body {
+.quad[data-col="5"] .cell-body {
   margin-left: auto;
 }
 
@@ -679,886 +678,1151 @@ html, body {
       <div class="tick tick--rc"></div>
     </div>
 
-    <!-- Row 0 -->
+    <!-- ═══════════════════════════════════════════ ROW 0 ══ -->
+
     <div class="quad" data-col="0" data-row="0">
       <div class="quad-fig">fig. 0.0 — overview</div>
-      <div class="quad-sec">§ 0</div>
+      <div class="quad-sec">§0</div>
       <div class="qi">
-        <div class="tag">core</div>
+        <div class="tag">architecture</div>
         <div class="cell-title">crono-vm</div>
-        <div class="cell-sub">virtual machine reference</div>
-        <div style="margin-bottom: 1.5em;">
-          <div class="stats">
-            <div class="stat">
-              <div class="stat-v">~45</div>
-              <div class="stat-k">opcodes</div>
-            </div>
-            <div class="stat">
-              <div class="stat-v">7</div>
-              <div class="stat-k">value types</div>
-            </div>
-            <div class="stat">
-              <div class="stat-v">M&amp;S</div>
-              <div class="stat-k">gc</div>
-            </div>
+        <div class="cell-sub">register-based bytecode VM · computed goto</div>
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-v">32</div>
+            <div class="stat-k">bit words</div>
+          </div>
+          <div class="stat">
+            <div class="stat-v">8</div>
+            <div class="stat-k">opcode bits</div>
+          </div>
+          <div class="stat">
+            <div class="stat-v">24B</div>
+            <div class="stat-k">header</div>
+          </div>
+          <div class="stat">
+            <div class="stat-v">v1</div>
+            <div class="stat-k">format</div>
           </div>
         </div>
-        <div class="cell-body">A stack-based bytecode virtual machine with precisely defined semantics. The execution foundation for the entire crono ecosystem — designed for clarity and extensibility first.</div>
-        <a href="#" class="btn primary">→ quick start</a>
+        <div class="cell-body">Register-based VM — not stack-based. Instructions are 32-bit fixed-width words. OpCode in the low 8 bits of the first word; operands packed as 8-bit fields in the same or subsequent words. IP is a uint32_t* into a flat std::vector&lt;uint32_t&gt;. Dispatch via computed goto (GCC label-as-value) on the low 8 bits.</div>
+        <div class="kv-list">
+          <div class="kv-row">
+            <div class="kv-k">magic</div>
+            <div class="kv-v">CRONO_VM (8 bytes)</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">version</div>
+            <div class="kv-v">uint32_t (current: 1)</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">entryPoint</div>
+            <div class="kv-v">uint32_t (word index)</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">metadataOffset</div>
+            <div class="kv-v">uint64_t</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">header size</div>
+            <div class="kv-v">24 bytes (BYTECODE_HEADER_SIZE)</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">exec limit</div>
+            <div class="kv-v">CronoConfig::maxOpcodes → StepResult::ERROR</div>
+          </div>
+        </div>
       </div>
     </div>
 
     <div class="quad" data-col="1" data-row="0">
-      <div class="quad-fig">fig. 1.0 — architecture</div>
-      <div class="quad-sec">§ 1</div>
+      <div class="quad-fig">fig. 1.0 — globals / locals / constants</div>
+      <div class="quad-sec">§1</div>
       <div class="qi">
-        <div class="tag">internals</div>
-        <div class="cell-title">architecture</div>
-        <div class="cell-sub">components & data flow</div>
-        <div class="arch">
-          <div class="arch-node">
-            <div class="atag">input</div>
-            bytecode (.cvm file)
+        <div class="tag">load · store</div>
+        <div class="cell-title">globals, locals &amp; constants</div>
+        <div class="cell-sub">register load/store opcodes</div>
+        <div class="op-table">
+          <div class="op-head">
+            <div class="op-h">opcode</div>
+            <div class="op-h">encoding</div>
+            <div class="op-h">operation</div>
           </div>
-          <div class="arch-conn"></div>
-          <div class="arch-node">
-            <div class="atag">loader</div>
-            module loader & linker
+          <div class="op-row">
+            <div class="op-c">SET_GLOBAL</div>
+            <div class="op-c stack">[op:8, slot:8, type:2, src:8]</div>
+            <div class="op-c">write value to global slot (old format)</div>
           </div>
-          <div class="arch-conn"></div>
-          <div class="arch-node">
-            <div class="atag">dispatch</div>
-            instruction dispatcher
+          <div class="op-row">
+            <div class="op-c">GET_GLOBAL</div>
+            <div class="op-c stack">[op:8, dst:8, globalSlot:16]</div>
+            <div class="op-c">copy global → local reg</div>
           </div>
-          <div class="arch-conn"></div>
-          <div class="arch-node">
-            <div class="atag">stack</div>
-            operand stack + call frames
+          <div class="op-row">
+            <div class="op-c">SET_GLOBAL_REG</div>
+            <div class="op-c stack">[op:8, globalSlot:16, src:8]</div>
+            <div class="op-c">copy local reg → global</div>
           </div>
-          <div class="arch-conn"></div>
-          <div class="arch-node">
-            <div class="atag">heap</div>
-            managed heap + GC
+          <div class="op-row">
+            <div class="op-c">GET_GLOBAL_WIDE</div>
+            <div class="op-c stack">[op:8, local:8, global:16]</div>
+            <div class="op-c">copy global → local (wide index)</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">SET_GLOBAL_WIDE</div>
+            <div class="op-c stack">[op:8, local:8, global:16]</div>
+            <div class="op-c">copy local → global (wide index)</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">LOAD_CONSTANT_WIDE</div>
+            <div class="op-c stack">[op:8, local:8, constIdx:16]</div>
+            <div class="op-c">load constant table entry → local</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">SET_LOCAL</div>
+            <div class="op-c stack">[op:8, dst:8, type:2, slot:8]</div>
+            <div class="op-c">write decoded operand → local reg (old format)</div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="quad" data-col="2" data-row="0">
-      <div class="quad-fig">fig. 2.0 — execution model</div>
-      <div class="quad-sec">§ 2</div>
+      <div class="quad-fig">fig. 2.0 — dynamic arithmetic + unary</div>
+      <div class="quad-sec">§2</div>
       <div class="qi">
-        <div class="tag">runtime</div>
-        <div class="cell-title">execution model</div>
-        <div class="cell-sub">stack, frames & dispatch</div>
-        <div class="cell-body">The VM maintains an operand stack and a call stack of frames. Each frame holds its own locals, a reference to its closure, and a return address.</div>
-        <div class="kv-list">
-          <div class="kv-row">
-            <div class="kv-k">dispatch</div>
-            <div class="kv-v">direct threaded (switch)</div>
+        <div class="tag">arithmetic · logic</div>
+        <div class="cell-title">dynamic arith + unary</div>
+        <div class="cell-sub">dynamically typed · ADD supports string concat</div>
+        <div class="op-table">
+          <div class="op-head">
+            <div class="op-h">opcode</div>
+            <div class="op-h">encoding</div>
+            <div class="op-h">operation</div>
           </div>
-          <div class="kv-row">
-            <div class="kv-k">operand stack</div>
-            <div class="kv-v">grows upward, 256 slots default</div>
+          <div class="op-row">
+            <div class="op-c">ADD</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">dst = left + right; string concat via addValues</div>
           </div>
-          <div class="kv-row">
-            <div class="kv-k">call frames</div>
-            <div class="kv-v">linked list, heap-allocated</div>
+          <div class="op-row">
+            <div class="op-c">SUB</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">dst = left - right</div>
           </div>
-          <div class="kv-row">
-            <div class="kv-k">locals</div>
-            <div class="kv-v">index-addressed within frame</div>
+          <div class="op-row">
+            <div class="op-c">MUL</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">dst = left * right</div>
           </div>
-          <div class="kv-row">
-            <div class="kv-k">upvalues</div>
-            <div class="kv-v">captured by reference, closed on exit</div>
+          <div class="op-row">
+            <div class="op-c">DIV</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">dst = left / right</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">MOD</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">dst = left % right</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">NEG</div>
+            <div class="op-c stack">[op:8, dst:8, src:8, _:8]</div>
+            <div class="op-c">arithmetic negate</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">NOT</div>
+            <div class="op-c stack">[op:8, dst:8, src:8, _:8]</div>
+            <div class="op-c">logical NOT (isFalsey) — nil and false are falsey</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">BITWISE_NOT</div>
+            <div class="op-c stack">[op:8, dst:8, src:8, _:8]</div>
+            <div class="op-c">bitwise NOT</div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="quad" data-col="3" data-row="0">
-      <div class="quad-fig">fig. 3.0 — value types</div>
-      <div class="quad-sec">§ 3</div>
+      <div class="quad-fig">fig. 3.0 — dynamic comparison</div>
+      <div class="quad-sec">§3</div>
       <div class="qi">
-        <div class="tag">type system</div>
-        <div class="cell-title">value types</div>
-        <div class="cell-sub">7 first-class types</div>
-        <div class="type-table">
-          <div class="type-row">
-            <div class="type-c">nil</div>
-            <div class="type-c bits">—</div>
-            <div class="type-c">absence of value</div>
-          </div>
-          <div class="type-row">
-            <div class="type-c">bool</div>
-            <div class="type-c bits">1</div>
-            <div class="type-c">true or false</div>
-          </div>
-          <div class="type-row">
-            <div class="type-c">int</div>
-            <div class="type-c bits">64</div>
-            <div class="type-c">signed integer</div>
-          </div>
-          <div class="type-row">
-            <div class="type-c">float</div>
-            <div class="type-c bits">64</div>
-            <div class="type-c">IEEE 754 double</div>
-          </div>
-          <div class="type-row">
-            <div class="type-c">string</div>
-            <div class="type-c bits">heap</div>
-            <div class="type-c">immutable UTF-8</div>
-          </div>
-          <div class="type-row">
-            <div class="type-c">object</div>
-            <div class="type-c bits">heap</div>
-            <div class="type-c">class instance</div>
-          </div>
-          <div class="type-row">
-            <div class="type-c">array</div>
-            <div class="type-c bits">heap</div>
-            <div class="type-c">dynamic typed array</div>
-          </div>
-        </div>
-        <div class="note">All heap-allocated types are managed by the garbage collector and subject to mark-and-sweep collection.</div>
-      </div>
-    </div>
-
-    <!-- Row 1 -->
-    <div class="quad" data-col="0" data-row="1">
-      <div class="quad-fig">fig. 0.1 — stack operations</div>
-      <div class="quad-sec">§ 4</div>
-      <div class="qi">
-        <div class="tag">opcodes — stack</div>
-        <div class="cell-title">stack ops</div>
-        <div class="cell-sub">push · pop · dup · swap</div>
+        <div class="tag">comparison · calls</div>
+        <div class="cell-title">dynamic comparison</div>
+        <div class="cell-sub">dispatch via compareValues → BOOL</div>
         <div class="op-table">
           <div class="op-head">
             <div class="op-h">opcode</div>
-            <div class="op-h">stack effect</div>
-            <div class="op-h">description</div>
+            <div class="op-h">encoding</div>
+            <div class="op-h">operation</div>
           </div>
           <div class="op-row">
-            <div class="op-c">PUSH_NULL</div>
-            <div class="op-c stack">→ nil</div>
-            <div class="op-c">push nil onto stack</div>
+            <div class="op-c">SET_BOOL_EQ</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">dst = (left == right)</div>
           </div>
           <div class="op-row">
-            <div class="op-c">PUSH_TRUE</div>
-            <div class="op-c stack">→ true</div>
-            <div class="op-c">push boolean true</div>
+            <div class="op-c">SET_BOOL_NE</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">dst = (left != right)</div>
           </div>
           <div class="op-row">
-            <div class="op-c">PUSH_FALSE</div>
-            <div class="op-c stack">→ false</div>
-            <div class="op-c">push boolean false</div>
+            <div class="op-c">SET_BOOL_LT</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">dst = (left &lt; right)</div>
           </div>
           <div class="op-row">
-            <div class="op-c">PUSH_INT</div>
-            <div class="op-c stack">→ int</div>
-            <div class="op-c">push 64-bit int literal</div>
+            <div class="op-c">SET_BOOL_GT</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">dst = (left &gt; right)</div>
           </div>
           <div class="op-row">
-            <div class="op-c">PUSH_FLOAT</div>
-            <div class="op-c stack">→ float</div>
-            <div class="op-c">push 64-bit float literal</div>
+            <div class="op-c">SET_BOOL_LE</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">dst = (left &lt;= right)</div>
           </div>
           <div class="op-row">
-            <div class="op-c">PUSH_STR</div>
-            <div class="op-c stack">→ string</div>
-            <div class="op-c">push string from constant pool</div>
+            <div class="op-c">SET_BOOL_GE</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">dst = (left &gt;= right)</div>
+          </div>
+        </div>
+        <div class="note">Dynamic dispatch via compareValues. All six produce BOOL values.</div>
+      </div>
+    </div>
+
+    <div class="quad" data-col="4" data-row="0">
+      <div class="quad-fig">fig. 4.0 — dynamic dispatch</div>
+      <div class="quad-sec">§4</div>
+      <div class="qi">
+        <div class="tag">objects · concurrency</div>
+        <div class="cell-title">dynamic dispatch</div>
+        <div class="cell-sub">name-based field &amp; method access</div>
+        <div class="op-table">
+          <div class="op-head">
+            <div class="op-h">opcode</div>
+            <div class="op-h">encoding</div>
+            <div class="op-h">operation</div>
           </div>
           <div class="op-row">
-            <div class="op-c">POP</div>
-            <div class="op-c stack">a →</div>
-            <div class="op-c">discard top of stack</div>
+            <div class="op-c">INVOKE_METHOD_BY_NAME</div>
+            <div class="op-c stack">[op:8,dst:8,obj:8,_:8] [nameConstIdx:16,argc:8,_:8] [argSlots…]</div>
+            <div class="op-c">lookup method by name string; falls back to callable field</div>
           </div>
           <div class="op-row">
-            <div class="op-c">DUP</div>
-            <div class="op-c stack">a → a, a</div>
-            <div class="op-c">duplicate top value</div>
+            <div class="op-c">GET_FIELD_BY_NAME</div>
+            <div class="op-c stack">[op:8,dst:8,obj:8,_:8] [nameConstIdx:16,_:16]</div>
+            <div class="op-c">field lookup by name</div>
           </div>
           <div class="op-row">
-            <div class="op-c">DUP2</div>
-            <div class="op-c stack">a,b → a,b,a,b</div>
-            <div class="op-c">duplicate top two values</div>
+            <div class="op-c">SET_FIELD_BY_NAME</div>
+            <div class="op-c stack">[op:8,src:8,obj:8,_:8] [nameConstIdx:16,_:16]</div>
+            <div class="op-c">field store by name</div>
           </div>
-          <div class="op-row">
-            <div class="op-c">SWAP</div>
-            <div class="op-c stack">a,b → b,a</div>
-            <div class="op-c">swap top two values</div>
+        </div>
+        <div class="note">⚠ All three require Metadata at runtime. Throw if metadata == nullptr. Production builds that strip metadata cannot use these opcodes.</div>
+      </div>
+    </div>
+
+    <div class="quad" data-col="5" data-row="0">
+      <div class="quad-fig">fig. 5.0 — memory &amp; GC</div>
+      <div class="quad-sec">§5</div>
+      <div class="qi">
+        <div class="tag">integration</div>
+        <div class="cell-title">memory &amp; GC</div>
+        <div class="cell-sub">tri-color mark-and-sweep</div>
+        <div class="kv-list">
+          <div class="kv-row">
+            <div class="kv-k">allocator</div>
+            <div class="kv-v">Memory::allocate&lt;T&gt;() — bumps bytesAllocated, links into object list via Object::next</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">algorithm</div>
+            <div class="kv-v">tri-color mark-and-sweep (incremental via grayStack)</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">trigger</div>
+            <div class="kv-v">bytesAllocated &gt; nextGC (initial 1 MB); also GC_COLLECT opcode or DEBUG_STRESS_GC</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">nextGC</div>
+            <div class="kv-v">bytesAllocated * 2 after each collection</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">roots</div>
+            <div class="kv-v">stack [0, liveTop), all constants, markRootsCallback (orbit stacks)</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">strings</div>
+            <div class="kv-v">interned in Memory::strings (unordered_multimap keyed by hash); copyString/takeString return canonical ptr</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">constants</div>
+            <div class="kv-v">only STRING objects accepted by Memory::addConstant</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">raw memory</div>
+            <div class="kv-v">allocateRaw/deallocateRaw for Array::elements and Buffer::data — not GC-tracked</div>
+          </div>
+        </div>
+        <div class="note">NativeObject tracing: if NativeObject::trace != nullptr, called with (ptr, Memory*) during traceReferences. Call crono_mark_value inside tracer to keep values alive.</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ ROW 1 ══ -->
+
+    <div class="quad" data-col="0" data-row="1">
+      <div class="quad-fig">fig. 0.1 — instruction word format</div>
+      <div class="quad-sec">§6</div>
+      <div class="qi">
+        <div class="tag">architecture</div>
+        <div class="cell-title">instruction word</div>
+        <div class="cell-sub">32-bit fixed-width encoding</div>
+        <div class="cell-body">All instructions are 32-bit words. OpCode occupies the low 8 bits of the first word. Remaining 24 bits and any subsequent words carry operands packed as 8-bit fields. The IP is a uint32_t* advanced by one or more words per instruction.</div>
+        <div class="kv-list">
+          <div class="kv-row">
+            <div class="kv-k">word size</div>
+            <div class="kv-v">32 bits</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">opcode field</div>
+            <div class="kv-v">bits [0, 7] of word 0 (uint8_t)</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">IP type</div>
+            <div class="kv-v">uint32_t* into flat std::vector&lt;uint32_t&gt;</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">function header</div>
+            <div class="kv-v">[isVariadic:1 | arity:15 | maxRegs:16]</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">isVariadic</div>
+            <div class="kv-v">bit 31 of function header word</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">arity</div>
+            <div class="kv-v">bits [16, 30] of function header word</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">arg packing</div>
+            <div class="kv-v">4 arg slots per subsequent word (8 bits each)</div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="quad" data-col="1" data-row="1">
-      <div class="quad-fig">fig. 1.1 — arithmetic ops</div>
-      <div class="quad-sec">§ 5</div>
+      <div class="quad-fig">fig. 1.1 — control flow</div>
+      <div class="quad-sec">§7</div>
       <div class="qi">
-        <div class="tag">opcodes — arithmetic</div>
-        <div class="cell-title">arithmetic</div>
-        <div class="cell-sub">int & float operations</div>
+        <div class="tag">control</div>
+        <div class="cell-title">control flow</div>
+        <div class="cell-sub">jumps · yield · debug · no-ops</div>
         <div class="op-table">
           <div class="op-head">
             <div class="op-h">opcode</div>
-            <div class="op-h">stack effect</div>
-            <div class="op-h">description</div>
+            <div class="op-h">encoding</div>
+            <div class="op-h">operation</div>
           </div>
           <div class="op-row">
-            <div class="op-c">ADD</div>
-            <div class="op-c stack">a, b → a+b</div>
-            <div class="op-c">integer addition</div>
+            <div class="op-c">JUMP</div>
+            <div class="op-c stack">[op:8, target:24]</div>
+            <div class="op-c">unconditional jump; ip = bytecode.data() + target</div>
           </div>
           <div class="op-row">
-            <div class="op-c">SUB</div>
-            <div class="op-c stack">a, b → a-b</div>
-            <div class="op-c">integer subtraction</div>
+            <div class="op-c">JUMP_IF</div>
+            <div class="op-c stack">[op:8, target:24] [w2]</div>
+            <div class="op-c">jump if second word's slot is truthy</div>
           </div>
           <div class="op-row">
-            <div class="op-c">MUL</div>
-            <div class="op-c stack">a, b → a*b</div>
-            <div class="op-c">integer multiplication</div>
+            <div class="op-c">RETURN</div>
+            <div class="op-c stack">[op:8, _:24]</div>
+            <div class="op-c">return reg[0] to caller; pops frame; signals orbit completion if in spawned orbit</div>
           </div>
           <div class="op-row">
-            <div class="op-c">DIV</div>
-            <div class="op-c stack">a, b → a/b</div>
-            <div class="op-c">integer division (truncating)</div>
+            <div class="op-c">BREAKPOINT</div>
+            <div class="op-c stack">[op:8, _:24]</div>
+            <div class="op-c">returns PAUSED in debug mode; no-op otherwise</div>
           </div>
           <div class="op-row">
-            <div class="op-c">MOD</div>
-            <div class="op-c stack">a, b → a%b</div>
-            <div class="op-c">integer modulo</div>
+            <div class="op-c">NONE</div>
+            <div class="op-c stack">[op:8, _:24]</div>
+            <div class="op-c">no-op</div>
           </div>
           <div class="op-row">
-            <div class="op-c">NEG</div>
-            <div class="op-c stack">a → -a</div>
-            <div class="op-c">integer negation</div>
+            <div class="op-c">GC_COLLECT</div>
+            <div class="op-c stack">[op:8, _:24]</div>
+            <div class="op-c">force GC collection</div>
           </div>
           <div class="op-row">
-            <div class="op-c">FADD</div>
-            <div class="op-c stack">a, b → a+b</div>
-            <div class="op-c">float addition</div>
-          </div>
-          <div class="op-row">
-            <div class="op-c">FSUB</div>
-            <div class="op-c stack">a, b → a-b</div>
-            <div class="op-c">float subtraction</div>
-          </div>
-          <div class="op-row">
-            <div class="op-c">FMUL</div>
-            <div class="op-c stack">a, b → a*b</div>
-            <div class="op-c">float multiplication</div>
-          </div>
-          <div class="op-row">
-            <div class="op-c">FDIV</div>
-            <div class="op-c stack">a, b → a/b</div>
-            <div class="op-c">IEEE 754 division</div>
+            <div class="op-c">WIDE</div>
+            <div class="op-c stack">[op:8, _:24]</div>
+            <div class="op-c">no-op placeholder; prefix handling not implemented</div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="quad" data-col="2" data-row="1">
-      <div class="quad-fig">fig. 2.1 — comparison ops</div>
-      <div class="quad-sec">§ 6</div>
+      <div class="quad-fig">fig. 2.1 — bitwise ops</div>
+      <div class="quad-sec">§8</div>
       <div class="qi">
-        <div class="tag">opcodes — comparison</div>
-        <div class="cell-title">comparison</div>
-        <div class="cell-sub">all return bool</div>
+        <div class="tag">bitwise</div>
+        <div class="cell-title">bitwise ops</div>
+        <div class="cell-sub">dynamically typed · same encoding as ADD/SUB</div>
         <div class="op-table">
           <div class="op-head">
             <div class="op-h">opcode</div>
-            <div class="op-h">stack effect</div>
-            <div class="op-h">description</div>
+            <div class="op-h">encoding</div>
+            <div class="op-h">operation</div>
           </div>
           <div class="op-row">
-            <div class="op-c">EQ</div>
-            <div class="op-c stack">a, b → bool</div>
-            <div class="op-c">equality (==)</div>
+            <div class="op-c">AND</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">bitwise AND</div>
           </div>
           <div class="op-row">
-            <div class="op-c">NEQ</div>
-            <div class="op-c stack">a, b → bool</div>
-            <div class="op-c">inequality (!=)</div>
+            <div class="op-c">OR</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">bitwise OR</div>
           </div>
           <div class="op-row">
-            <div class="op-c">LT</div>
-            <div class="op-c stack">a, b → bool</div>
-            <div class="op-c">less than (&lt;)</div>
+            <div class="op-c">XOR</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">bitwise XOR</div>
           </div>
           <div class="op-row">
-            <div class="op-c">GT</div>
-            <div class="op-c stack">a, b → bool</div>
-            <div class="op-c">greater than (&gt;)</div>
+            <div class="op-c">LSHIFT</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">left shift</div>
           </div>
           <div class="op-row">
-            <div class="op-c">LTE</div>
-            <div class="op-c stack">a, b → bool</div>
-            <div class="op-c">less than or equal (≤)</div>
-          </div>
-          <div class="op-row">
-            <div class="op-c">GTE</div>
-            <div class="op-c stack">a, b → bool</div>
-            <div class="op-c">greater than or equal (≥)</div>
-          </div>
-          <div class="op-row">
-            <div class="op-c">IS_NIL</div>
-            <div class="op-c stack">a → bool</div>
-            <div class="op-c">true if value is nil</div>
-          </div>
-          <div class="op-row">
-            <div class="op-c">IS_TYPE</div>
-            <div class="op-c stack">a → bool</div>
-            <div class="op-c">type check (operand: type tag)</div>
+            <div class="op-c">RSHIFT</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">right shift</div>
           </div>
         </div>
-        <div class="note">EQ on heap types compares by reference, not value. Use the .equals() method for structural equality.</div>
+        <div class="note">All bitwise ops are dynamically typed — no type enforcement at the opcode level. Same [op:8, dst:8, left:8, right:8] encoding as ADD/SUB/MUL/DIV.</div>
       </div>
     </div>
 
     <div class="quad" data-col="3" data-row="1">
-      <div class="quad-fig">fig. 3.1 — bitwise ops</div>
-      <div class="quad-sec">§ 7</div>
+      <div class="quad-fig">fig. 3.1 — INT-typed comparison</div>
+      <div class="quad-sec">§9</div>
       <div class="qi">
-        <div class="tag">opcodes — bitwise</div>
-        <div class="cell-title">bitwise</div>
-        <div class="cell-sub">int operands only</div>
+        <div class="tag">comparison (typed)</div>
+        <div class="cell-title">INT comparison</div>
+        <div class="cell-sub">typed fast path · skips dynamic dispatch</div>
         <div class="op-table">
           <div class="op-head">
             <div class="op-h">opcode</div>
-            <div class="op-h">stack effect</div>
-            <div class="op-h">description</div>
+            <div class="op-h">encoding</div>
+            <div class="op-h">operation</div>
           </div>
           <div class="op-row">
-            <div class="op-c">BAND</div>
-            <div class="op-c stack">a, b → int</div>
-            <div class="op-c">bitwise AND</div>
+            <div class="op-c">SET_BOOL_EQ_INT</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">dst = (left.i32 == right.i32)</div>
           </div>
           <div class="op-row">
-            <div class="op-c">BOR</div>
-            <div class="op-c stack">a, b → int</div>
-            <div class="op-c">bitwise OR</div>
+            <div class="op-c">SET_BOOL_NE_INT</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">dst = (left.i32 != right.i32)</div>
           </div>
           <div class="op-row">
-            <div class="op-c">BXOR</div>
-            <div class="op-c stack">a, b → int</div>
-            <div class="op-c">bitwise XOR</div>
+            <div class="op-c">SET_BOOL_LT_INT</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">dst = (left.i32 &lt; right.i32)</div>
           </div>
           <div class="op-row">
-            <div class="op-c">BNOT</div>
-            <div class="op-c stack">a → int</div>
-            <div class="op-c">bitwise NOT (one's complement)</div>
+            <div class="op-c">SET_BOOL_GT_INT</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">dst = (left.i32 &gt; right.i32)</div>
           </div>
           <div class="op-row">
-            <div class="op-c">BSHL</div>
-            <div class="op-c stack">a, n → int</div>
-            <div class="op-c">left shift by n bits</div>
+            <div class="op-c">SET_BOOL_LE_INT</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">dst = (left.i32 &lt;= right.i32)</div>
           </div>
           <div class="op-row">
-            <div class="op-c">BSHR</div>
-            <div class="op-c stack">a, n → int</div>
-            <div class="op-c">arithmetic right shift</div>
-          </div>
-          <div class="op-row">
-            <div class="op-c">BSHRU</div>
-            <div class="op-c stack">a, n → int</div>
-            <div class="op-c">logical right shift (unsigned)</div>
+            <div class="op-c">SET_BOOL_GE_INT</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">dst = (left.i32 &gt;= right.i32)</div>
           </div>
         </div>
-        <div class="note">All bitwise ops require int operands. Applying them to other types raises a TypeError at runtime.</div>
+        <div class="note">Typed fast path for int32_t comparisons. Operands are read as .i32 directly — no dynamic dispatch through compareValues.</div>
       </div>
     </div>
 
-    <!-- Row 2 -->
-    <div class="quad" data-col="0" data-row="2">
-      <div class="quad-fig">fig. 0.2 — flow control</div>
-      <div class="quad-sec">§ 8</div>
+    <div class="quad" data-col="4" data-row="1">
+      <div class="quad-fig">fig. 4.1 — arrays &amp; buffers</div>
+      <div class="quad-sec">§10</div>
       <div class="qi">
-        <div class="tag">opcodes — control</div>
-        <div class="cell-title">flow control</div>
-        <div class="cell-sub">jumps & branches</div>
+        <div class="tag">objects</div>
+        <div class="cell-title">arrays &amp; buffers</div>
+        <div class="cell-sub">heap-allocated sequence types + type checks</div>
         <div class="op-table">
           <div class="op-head">
             <div class="op-h">opcode</div>
-            <div class="op-h">stack effect</div>
-            <div class="op-h">description</div>
+            <div class="op-h">encoding</div>
+            <div class="op-h">operation</div>
           </div>
           <div class="op-row">
-            <div class="op-c">JMP</div>
-            <div class="op-c stack">→</div>
-            <div class="op-c">unconditional jump (operand: offset)</div>
+            <div class="op-c">NEW_ARRAY</div>
+            <div class="op-c stack">[op:8, dst:8, sizeReg:8, _:8]</div>
+            <div class="op-c">allocate array of sizeReg elements (all NIL); sizeReg must be INT; negative raises error</div>
           </div>
           <div class="op-row">
-            <div class="op-c">JMPT</div>
-            <div class="op-c stack">cond →</div>
-            <div class="op-c">jump if top is truthy</div>
+            <div class="op-c">LOAD_ELEMENT</div>
+            <div class="op-c stack">[op:8, dst:8, obj:8, index:8]</div>
+            <div class="op-c">dst = obj[index]; ARRAY → Value, BUFFER → INT byte</div>
           </div>
           <div class="op-row">
-            <div class="op-c">JMPF</div>
-            <div class="op-c stack">cond →</div>
-            <div class="op-c">jump if top is falsy</div>
+            <div class="op-c">STORE_ELEMENT</div>
+            <div class="op-c stack">[op:8, obj:8, index:8, value:8]</div>
+            <div class="op-c">obj[index] = value; BUFFER only accepts INT (truncated to uint8_t)</div>
           </div>
           <div class="op-row">
-            <div class="op-c">JMPT_K</div>
-            <div class="op-c stack">cond</div>
-            <div class="op-c">jump-if-true, keep value on stack</div>
+            <div class="op-c">ARRAY_LENGTH</div>
+            <div class="op-c stack">[op:8, dst:8, obj:8, _:8]</div>
+            <div class="op-c">dst = length/count; works on ARRAY and BUFFER</div>
           </div>
           <div class="op-row">
-            <div class="op-c">JMPF_K</div>
-            <div class="op-c stack">cond</div>
-            <div class="op-c">jump-if-false, keep value on stack</div>
+            <div class="op-c">IS_INSTANCE</div>
+            <div class="op-c stack">[op:8, dst:8, src:8, _:8]</div>
+            <div class="op-c">dst = (src.isObj &amp;&amp; src.objType == INSTANCE)</div>
           </div>
           <div class="op-row">
-            <div class="op-c">LOOP</div>
-            <div class="op-c stack">→</div>
-            <div class="op-c">backward jump (operand: -offset)</div>
-          </div>
-          <div class="op-row">
-            <div class="op-c">NOP</div>
-            <div class="op-c stack">→</div>
-            <div class="op-c">no operation (padding)</div>
-          </div>
-          <div class="op-row">
-            <div class="op-c">HALT</div>
-            <div class="op-c stack">→</div>
-            <div class="op-c">stop execution, exit cleanly</div>
+            <div class="op-c">INSTANCE_OF</div>
+            <div class="op-c stack">[op:8, dst:8, src:8, classReg:8]</div>
+            <div class="op-c">dst = (src instanceof classReg); walks baseClassId chain</div>
           </div>
         </div>
-        <div class="note">Jump offsets are signed 16-bit integers relative to the instruction after the jump.</div>
+      </div>
+    </div>
+
+    <div class="quad" data-col="5" data-row="1">
+      <div class="quad-fig">fig. 5.1 — module system</div>
+      <div class="quad-sec">§11</div>
+      <div class="qi">
+        <div class="tag">integration</div>
+        <div class="cell-title">module system</div>
+        <div class="cell-sub">ModuleData · Metadata · extensions</div>
+        <div class="cell-body">ModuleData is the bytecode module container. Metadata is optional and stripped in production builds — its absence disables name-based dynamic dispatch.</div>
+        <div class="kv-list">
+          <div class="kv-row">
+            <div class="kv-k">classes</div>
+            <div class="kv-v">ClassesTable — vector&lt;ClassData&gt; (fieldCount, baseClassId, methodOffsets)</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">constants</div>
+            <div class="kv-v">ConstantsTable — variant of monostate/bool/int32/int64/float/double/string/ConstantAddress</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">exceptions</div>
+            <div class="kv-v">ExceptionTable (flat list of ExceptionEntry)</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">extensions</div>
+            <div class="kv-v">vector&lt;ExtensionRequest&gt;</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">meta.lines</div>
+            <div class="kv-v">vector&lt;int&gt; — word index → source line</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">meta.symbols</div>
+            <div class="kv-v">unordered_map&lt;int, FunctionSymbols&gt; keyed by functionStart</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">meta.globalNames</div>
+            <div class="kv-v">map&lt;string, int&gt; — name → absolute stack slot</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">resolution</div>
+            <div class="kv-v">.crono files by path; supports * and ** wildcards; base via ModuleLoader::setScriptDirectory</div>
+          </div>
+        </div>
+        <div class="note">Extensions export crono_setup(CronoRegistry*) and optionally crono_init(CronoVM*). Loaded via crono_load_extension(vm, path) or declared in ModuleData::extensions at compile time.</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ ROW 2 ══ -->
+
+    <div class="quad" data-col="0" data-row="2">
+      <div class="quad-fig">fig. 0.2 — value types (scalar)</div>
+      <div class="quad-sec">§12</div>
+      <div class="qi">
+        <div class="tag">type system</div>
+        <div class="cell-title">value types</div>
+        <div class="cell-sub">ValueType enum · types_core.hpp</div>
+        <div class="type-table">
+          <div class="type-row">
+            <div class="type-c">NIL</div>
+            <div class="type-c bits">—</div>
+            <div class="type-c">default-constructed Value</div>
+          </div>
+          <div class="type-row">
+            <div class="type-c">BOOL</div>
+            <div class="type-c bits">bool</div>
+            <div class="type-c"></div>
+          </div>
+          <div class="type-row">
+            <div class="type-c">INT</div>
+            <div class="type-c bits">int32_t</div>
+            <div class="type-c"></div>
+          </div>
+          <div class="type-row">
+            <div class="type-c">LONG</div>
+            <div class="type-c bits">int64_t</div>
+            <div class="type-c"></div>
+          </div>
+          <div class="type-row">
+            <div class="type-c">FLOAT</div>
+            <div class="type-c bits">float</div>
+            <div class="type-c"></div>
+          </div>
+          <div class="type-row">
+            <div class="type-c">DOUBLE</div>
+            <div class="type-c bits">double</div>
+            <div class="type-c"></div>
+          </div>
+          <div class="type-row">
+            <div class="type-c">OBJ</div>
+            <div class="type-c bits">vm::Object*</div>
+            <div class="type-c">heap-allocated, GC-managed</div>
+          </div>
+          <div class="type-row">
+            <div class="type-c">ADDRESS</div>
+            <div class="type-c bits">int</div>
+            <div class="type-c">absolute word index; typeOf() returns "function"</div>
+          </div>
+          <div class="type-row">
+            <div class="type-c">VOID_TYPE</div>
+            <div class="type-c bits">—</div>
+            <div class="type-c">declared but unused; no constructor; not produced by typeOf()</div>
+          </div>
+        </div>
+        <div class="note">Value is a tagged union (value.hpp). typeOf(Value) returns a human-readable string; returns typeName for NATIVE_OBJECT.</div>
       </div>
     </div>
 
     <div class="quad" data-col="1" data-row="2">
-      <div class="quad-fig">fig. 1.2 — call & return</div>
-      <div class="quad-sec">§ 9</div>
+      <div class="quad-fig">fig. 1.2 — error model</div>
+      <div class="quad-sec">§13</div>
       <div class="qi">
-        <div class="tag">opcodes — calls</div>
-        <div class="cell-title">call / return</div>
-        <div class="cell-sub">functions & closures</div>
+        <div class="tag">errors</div>
+        <div class="cell-title">error model</div>
+        <div class="cell-sub">THROW_ERROR · GET_ERROR · ExceptionTable</div>
         <div class="op-table">
           <div class="op-head">
             <div class="op-h">opcode</div>
-            <div class="op-h">stack effect</div>
-            <div class="op-h">description</div>
+            <div class="op-h">encoding</div>
+            <div class="op-h">operation</div>
           </div>
           <div class="op-row">
-            <div class="op-c">CALL</div>
-            <div class="op-c stack">fn, args… → ret</div>
-            <div class="op-c">call function, push return value</div>
+            <div class="op-c">THROW_ERROR</div>
+            <div class="op-c stack">[op:8, src:8, _:16]</div>
+            <div class="op-c">raise error from register; walks ExceptionTable; unwinds frames; throws CronoError::Runtime if unhandled</div>
           </div>
           <div class="op-row">
-            <div class="op-c">CALL_VOID</div>
-            <div class="op-c stack">fn, args… →</div>
-            <div class="op-c">call function, discard return</div>
-          </div>
-          <div class="op-row">
-            <div class="op-c">CALL_METHOD</div>
-            <div class="op-c stack">obj, args… → ret</div>
-            <div class="op-c">call method by name operand</div>
-          </div>
-          <div class="op-row">
-            <div class="op-c">TAILCALL</div>
-            <div class="op-c stack">fn, args… →</div>
-            <div class="op-c">tail-call optimised call</div>
-          </div>
-          <div class="op-row">
-            <div class="op-c">RET</div>
-            <div class="op-c stack">val →</div>
-            <div class="op-c">return value to caller</div>
-          </div>
-          <div class="op-row">
-            <div class="op-c">RET_VOID</div>
-            <div class="op-c stack">→</div>
-            <div class="op-c">return nil to caller</div>
-          </div>
-          <div class="op-row">
-            <div class="op-c">LOAD_CLOSURE</div>
-            <div class="op-c stack">→ fn</div>
-            <div class="op-c">push closure object onto stack</div>
+            <div class="op-c">GET_ERROR</div>
+            <div class="op-c stack">[op:8, dst:8, _:16]</div>
+            <div class="op-c">copy current error value to dst; clear error flag</div>
           </div>
         </div>
-        <div class="note">TAILCALL reuses the current frame, enabling proper tail-call optimisation for recursive functions.</div>
+        <div class="cell-body">raiseError walks the flat ExceptionTable from ModuleData, comparing errorPC against [startPC, endPC) of each ExceptionEntry. On match: IP jumps to handlerPC. On no match: frames popped until one matches or stack exhausted.</div>
+        <div class="note">ExceptionEntry has types CATCH and FINALLY — the runtime does NOT differentiate them. Both redirect IP to handlerPC identically.</div>
       </div>
     </div>
 
     <div class="quad" data-col="2" data-row="2">
-      <div class="quad-fig">fig. 2.2 — variables</div>
-      <div class="quad-sec">§ 10</div>
+      <div class="quad-fig">fig. 2.2 — INT arithmetic</div>
+      <div class="quad-sec">§14</div>
       <div class="qi">
-        <div class="tag">opcodes — variables</div>
-        <div class="cell-title">variables</div>
-        <div class="cell-sub">locals · globals · upvalues</div>
+        <div class="tag">arithmetic (typed)</div>
+        <div class="cell-title">INT arithmetic</div>
+        <div class="cell-sub">typed int32_t operations</div>
         <div class="op-table">
           <div class="op-head">
             <div class="op-h">opcode</div>
-            <div class="op-h">stack effect</div>
-            <div class="op-h">description</div>
+            <div class="op-h">encoding</div>
+            <div class="op-h">operation</div>
           </div>
           <div class="op-row">
-            <div class="op-c">LOAD_LOCAL</div>
-            <div class="op-c stack">→ val</div>
-            <div class="op-c">push local[i] (operand: index)</div>
+            <div class="op-c">ADD_INT</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">dst = left.i32 + right.i32</div>
           </div>
           <div class="op-row">
-            <div class="op-c">STORE_LOCAL</div>
-            <div class="op-c stack">val →</div>
-            <div class="op-c">pop into local[i]</div>
+            <div class="op-c">SUB_INT</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">dst = left.i32 - right.i32</div>
           </div>
           <div class="op-row">
-            <div class="op-c">LOAD_GLOBAL</div>
-            <div class="op-c stack">→ val</div>
-            <div class="op-c">push global by name operand</div>
+            <div class="op-c">MUL_INT</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">dst = left.i32 * right.i32</div>
           </div>
           <div class="op-row">
-            <div class="op-c">STORE_GLOBAL</div>
-            <div class="op-c stack">val →</div>
-            <div class="op-c">pop into global by name</div>
+            <div class="op-c">DIV_INT</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">dst = left.i32 / right.i32 — raises error on divisor == 0</div>
           </div>
           <div class="op-row">
-            <div class="op-c">LOAD_UPVAL</div>
-            <div class="op-c stack">→ val</div>
-            <div class="op-c">push captured upvalue[i]</div>
+            <div class="op-c">MOD_INT</div>
+            <div class="op-c stack">[op:8, dst:8, left:8, right:8]</div>
+            <div class="op-c">dst = left.i32 % right.i32 — error on mod 0; result sign follows divisor</div>
           </div>
           <div class="op-row">
-            <div class="op-c">STORE_UPVAL</div>
-            <div class="op-c stack">val →</div>
-            <div class="op-c">pop into upvalue[i]</div>
+            <div class="op-c">INC_INT</div>
+            <div class="op-c stack">[op:8, dst:8, _:16]</div>
+            <div class="op-c">dst.i32++ (in-place)</div>
           </div>
           <div class="op-row">
-            <div class="op-c">CLOSE_UPVAL</div>
-            <div class="op-c stack">→</div>
-            <div class="op-c">close open upvalue to heap</div>
+            <div class="op-c">DEC_INT</div>
+            <div class="op-c stack">[op:8, dst:8, _:16]</div>
+            <div class="op-c">dst.i32-- (in-place)</div>
           </div>
         </div>
-        <div class="note">Locals are index-addressed within the current call frame. Upvalues are heap-allocated cells shared by closures.</div>
       </div>
     </div>
 
     <div class="quad" data-col="3" data-row="2">
-      <div class="quad-fig">fig. 3.2 — objects & arrays</div>
-      <div class="quad-sec">§ 11</div>
+      <div class="quad-fig">fig. 3.2 — call + variadic</div>
+      <div class="quad-sec">§15</div>
       <div class="qi">
-        <div class="tag">opcodes — heap</div>
-        <div class="cell-title">objects & arrays</div>
-        <div class="cell-sub">heap allocation & access</div>
+        <div class="tag">calls</div>
+        <div class="cell-title">call + variadic</div>
+        <div class="cell-sub">CALL · GET_VAR_COUNT · GET_VAR_ARG</div>
         <div class="op-table">
           <div class="op-head">
             <div class="op-h">opcode</div>
-            <div class="op-h">stack effect</div>
-            <div class="op-h">description</div>
+            <div class="op-h">encoding</div>
+            <div class="op-h">operation</div>
           </div>
           <div class="op-row">
-            <div class="op-c">NEW</div>
-            <div class="op-c stack">→ obj</div>
-            <div class="op-c">allocate new instance of class</div>
+            <div class="op-c">CALL</div>
+            <div class="op-c stack">[op:8, callee:8, result:8, argc:8] [argSlots…]</div>
+            <div class="op-c">call callee; result → result reg; supports ADDRESS, NATIVE, DYNAMIC_FUNCTION</div>
           </div>
           <div class="op-row">
-            <div class="op-c">GET_PROP</div>
-            <div class="op-c stack">obj → val</div>
-            <div class="op-c">get property by name operand</div>
+            <div class="op-c">GET_VAR_COUNT</div>
+            <div class="op-c stack">[op:8, dst:8, _:16]</div>
+            <div class="op-c">dst = actual_argc - fixed_arity (number of extra variadic args)</div>
           </div>
           <div class="op-row">
-            <div class="op-c">SET_PROP</div>
-            <div class="op-c stack">obj, val →</div>
-            <div class="op-c">set property by name operand</div>
-          </div>
-          <div class="op-row">
-            <div class="op-c">INSTANCEOF</div>
-            <div class="op-c stack">obj → bool</div>
-            <div class="op-c">check class hierarchy</div>
-          </div>
-          <div class="op-row">
-            <div class="op-c">NEW_ARRAY</div>
-            <div class="op-c stack">→ arr</div>
-            <div class="op-c">allocate empty array</div>
-          </div>
-          <div class="op-row">
-            <div class="op-c">GET_IDX</div>
-            <div class="op-c stack">arr, i → val</div>
-            <div class="op-c">get element at index</div>
-          </div>
-          <div class="op-row">
-            <div class="op-c">SET_IDX</div>
-            <div class="op-c stack">arr, i, val →</div>
-            <div class="op-c">set element at index</div>
-          </div>
-          <div class="op-row">
-            <div class="op-c">ARRAY_LEN</div>
-            <div class="op-c stack">arr → int</div>
-            <div class="op-c">push length of array</div>
-          </div>
-          <div class="op-row">
-            <div class="op-c">ARRAY_PUSH</div>
-            <div class="op-c stack">arr, val →</div>
-            <div class="op-c">append value to array</div>
+            <div class="op-c">GET_VAR_ARG</div>
+            <div class="op-c stack">[op:8, dst:8, indexReg:8, _:8]</div>
+            <div class="op-c">dst = vararg[index]</div>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Row 3 -->
-    <div class="quad" data-col="0" data-row="3">
-      <div class="quad-fig">fig. 0.3 — garbage collector</div>
-      <div class="quad-sec">§ 12</div>
-      <div class="qi">
-        <div class="tag">memory management</div>
-        <div class="cell-title">garbage collector</div>
-        <div class="cell-sub">mark-and-sweep · tri-color</div>
-        <div class="cell-body">A tri-color mark-and-sweep GC. All heap-allocated values (strings, objects, arrays, closures) are tracked. The GC runs automatically when heap pressure exceeds a threshold.</div>
         <div class="kv-list">
           <div class="kv-row">
-            <div class="kv-k">algorithm</div>
-            <div class="kv-v">tri-color mark-and-sweep</div>
+            <div class="kv-k">isVariadic</div>
+            <div class="kv-v">bit 31 of function header word</div>
           </div>
           <div class="kv-row">
-            <div class="kv-k">trigger</div>
-            <div class="kv-v">heap size > threshold (default 1 MB)</div>
+            <div class="kv-k">arity</div>
+            <div class="kv-v">bits [16, 30] of function header word</div>
           </div>
           <div class="kv-row">
-            <div class="kv-k">roots</div>
-            <div class="kv-v">operand stack, globals, open upvalues</div>
-          </div>
-          <div class="kv-row">
-            <div class="kv-k">cycles</div>
-            <div class="kv-v">handled (back-references traced)</div>
-          </div>
-          <div class="kv-row">
-            <div class="kv-k">growth factor</div>
-            <div class="kv-v">2× after each full collection</div>
+            <div class="kv-k">vararg layout</div>
+            <div class="kv-v">reg[arity .. arity+varCount-1]</div>
           </div>
         </div>
-        <div class="note">The GC is stop-the-world. Concurrent collection is planned for a future revision.</div>
+      </div>
+    </div>
+
+    <div class="quad" data-col="4" data-row="2">
+      <div class="quad-fig">fig. 4.2 — orbit scheduler</div>
+      <div class="quad-sec">§16</div>
+      <div class="qi">
+        <div class="tag">concurrency</div>
+        <div class="cell-title">orbit scheduler</div>
+        <div class="cell-sub">single-threaded cooperative multitasking</div>
+        <div class="op-table">
+          <div class="op-head">
+            <div class="op-h">opcode</div>
+            <div class="op-h">encoding</div>
+            <div class="op-h">operation</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">ORBIT_SPAWN</div>
+            <div class="op-c stack">[op:8, callee:8, dst:8, argc:8] [argSlots…]</div>
+            <div class="op-c">spawn cooperative coroutine; dst = SyncHandle*; native callee runs sync and returns pre-signaled handle; bytecode callee enqueued</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">ORBIT_SPAWN_METHOD</div>
+            <div class="op-c stack">[op:8, dst:8, obj:8, methodSlot:8] [argc:8, _:24] [argSlots…]</div>
+            <div class="op-c">spawn method as orbit; receiver pushed as arg[0]</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">ORBIT_YIELD</div>
+            <div class="op-c stack">[op:8, _:24]</div>
+            <div class="op-c">cooperative yield to next ready orbit; no-op if no other orbits</div>
+          </div>
+        </div>
+        <div class="kv-list">
+          <div class="kv-row">
+            <div class="kv-k">scheduling</div>
+            <div class="kv-v">round-robin; readyOrbits queue</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">suspension</div>
+            <div class="kv-v">native sets memory-&gt;pendingSuspend</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">resumption</div>
+            <div class="kv-v">memory-&gt;enqueueWake (thread-safe)</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">deadlock</div>
+            <div class="kv-v">detected when all orbits suspended and no LAUNCH_NATIVE threads in flight</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quad" data-col="5" data-row="2">
+      <div class="quad-fig">fig. 5.2 — C API</div>
+      <div class="quad-sec">§17</div>
+      <div class="qi">
+        <div class="tag">integration</div>
+        <div class="cell-title">C API</div>
+        <div class="cell-sub">crono_api.h · extern "C" · CRONO_API</div>
+        <div class="code">// Lifecycle
+CronoVM* crono_create();
+void     crono_destroy(CronoVM* vm);
+
+// Execution
+int crono_run(CronoVM* vm, const char* source);
+int crono_call(CronoVM* vm, const char* func_name,
+               int argc, const CronoValue* argv, CronoValue* result);
+int crono_get_global(CronoVM* vm, const char* name, CronoValue* result);
+int crono_get_field(CronoVM* vm, CronoValue instance,
+                    const char* name, CronoValue* result);
+int crono_set_field(CronoVM* vm, CronoValue instance,
+                    const char* name, CronoValue value);
+
+// Registration
+int crono_register_function(CronoVM* vm, const char* name,
+    const char** param_types, int param_count,
+    CronoNativeCallback callback);
+
+// Extensions
+int crono_load_extension(CronoVM* vm, const char* path);
+int crono_create_instance(CronoVM* vm, const char* class_name,
+                          CronoValue* result);
+
+// Error / Debug
+const char*     crono_get_last_error(CronoVM* vm);
+CronoStepResult crono_step(CronoVM* vm);
+int  crono_get_current_line(CronoVM* vm);
+int  crono_get_frame_count(CronoVM* vm);
+void crono_get_frame_info(CronoVM* vm, int index, CronoFrameInfo* info);
+int  crono_get_stack_value(CronoVM* vm, int index, CronoValue* result);
+int  crono_get_buffer_info(CronoVM* vm, CronoValue buf,
+                           void** ptr, int* size);
+void crono_mark_value(void* gc_ctx, CronoValue val);</div>
+        <div class="kv-list">
+          <div class="kv-row">
+            <div class="kv-k">CronoStepResult</div>
+            <div class="kv-v">OK=0, DONE=1, ERROR=2, PAUSED=3</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">CronoValueType</div>
+            <div class="kv-v">NIL, BOOL, INT, FLOAT, STRING, POINTER, BUFFER, NATIVE_OBJECT, ERROR</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">LONG / DOUBLE</div>
+            <div class="kv-v">not exposed — LONG drops to NIL, DOUBLE maps to FLOAT</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ ROW 3 ══ -->
+
+    <div class="quad" data-col="0" data-row="3">
+      <div class="quad-fig">fig. 0.3 — object types (heap)</div>
+      <div class="quad-sec">§18</div>
+      <div class="qi">
+        <div class="tag">type system</div>
+        <div class="cell-title">object types</div>
+        <div class="cell-sub">ObjType enum · heap-allocated · types_core.hpp</div>
+        <div class="type-table">
+          <div class="type-row">
+            <div class="type-c">STRING</div>
+            <div class="type-c bits">vm::String</div>
+            <div class="type-c">interned; char* chars, int length, uint32_t hash</div>
+          </div>
+          <div class="type-row">
+            <div class="type-c">NATIVE</div>
+            <div class="type-c bits">vm::Native</div>
+            <div class="type-c">wraps NativeFn (std::function&lt;Value(Memory*, int, Value*)&gt;)</div>
+          </div>
+          <div class="type-row">
+            <div class="type-c">CLASS</div>
+            <div class="type-c bits">vm::Class</div>
+            <div class="type-c">classId, baseClassId (-1=no base), fieldCount, methodOffsets</div>
+          </div>
+          <div class="type-row">
+            <div class="type-c">INSTANCE</div>
+            <div class="type-c bits">vm::Instance</div>
+            <div class="type-c">vm::Class* cls, std::vector&lt;Value&gt; fields</div>
+          </div>
+          <div class="type-row">
+            <div class="type-c">ARRAY</div>
+            <div class="type-c bits">vm::Array</div>
+            <div class="type-c">int length, Value* elements (raw heap)</div>
+          </div>
+          <div class="type-row">
+            <div class="type-c">MODULE</div>
+            <div class="type-c bits">vm::Module</div>
+            <div class="type-c">vm::String* name, void* handle (DLL handle)</div>
+          </div>
+          <div class="type-row">
+            <div class="type-c">DYNAMIC_FUNCTION</div>
+            <div class="type-c bits">vm::DynamicFunction</div>
+            <div class="type-c">vm::String* name, void* func_ptr (FFI symbol)</div>
+          </div>
+          <div class="type-row">
+            <div class="type-c">BUFFER</div>
+            <div class="type-c bits">vm::Buffer</div>
+            <div class="type-c">int count, uint8_t* data (raw bytes)</div>
+          </div>
+          <div class="type-row">
+            <div class="type-c">NATIVE_OBJECT</div>
+            <div class="type-c bits">vm::NativeObject</div>
+            <div class="type-c">void* ptr, const char* typeName, destructor, tracer</div>
+          </div>
+          <div class="type-row">
+            <div class="type-c">SYNC_HANDLE</div>
+            <div class="type-c bits">vm::SyncHandle</div>
+            <div class="type-c">Value payload, bool ready; used by orbit scheduler</div>
+          </div>
+        </div>
       </div>
     </div>
 
     <div class="quad" data-col="1" data-row="3">
-      <div class="quad-fig">fig. 1.3 — module system</div>
-      <div class="quad-sec">§ 13</div>
+      <div class="quad-fig">fig. 1.3 — execution model</div>
+      <div class="quad-sec">§19</div>
       <div class="qi">
-        <div class="tag">modules</div>
-        <div class="cell-title">module system</div>
-        <div class="cell-sub">import · export · namespaces</div>
-        <div class="cell-body">Modules are individual .cvm files. Each module has its own global namespace. Imports are resolved at load time; circular imports are detected and raise a LoadError.</div>
-        <div class="op-table">
-          <div class="op-head">
-            <div class="op-h">opcode</div>
-            <div class="op-h">stack effect</div>
-            <div class="op-h">description</div>
-          </div>
-          <div class="op-row">
-            <div class="op-c">IMPORT</div>
-            <div class="op-c stack">→ module</div>
-            <div class="op-c">load module by path operand</div>
-          </div>
-          <div class="op-row">
-            <div class="op-c">IMPORT_FROM</div>
-            <div class="op-c stack">module → val</div>
-            <div class="op-c">get exported name from module</div>
-          </div>
-          <div class="op-row">
-            <div class="op-c">EXPORT</div>
-            <div class="op-c stack">val →</div>
-            <div class="op-c">export name from current module</div>
-          </div>
-        </div>
+        <div class="tag">runtime</div>
+        <div class="cell-title">execution model</div>
+        <div class="cell-sub">CallFrame · stack layout · falsey values</div>
+        <div class="code">struct CallFrame {
+    uint32_t* ip;        // instruction pointer
+    int slots;           // absolute stack index of reg[0]
+    int functionStart;   // bytecode word index of function header
+    int argCount;        // total args passed
+    int resultLocal;     // caller's slot for return value (-1 = discard)
+};</div>
         <div class="kv-list">
           <div class="kv-row">
-            <div class="kv-k">resolution</div>
-            <div class="kv-v">filesystem-relative, then stdlib path</div>
+            <div class="kv-k">_main frame</div>
+            <div class="kv-v">GLOBAL_FRAME_START = -1</div>
           </div>
           <div class="kv-row">
-            <div class="kv-k">caching</div>
-            <div class="kv-v">modules cached after first load</div>
+            <div class="kv-k">RETURN</div>
+            <div class="kv-v">reads reg[0]; trims stack to callerStackBase; writes to caller.reg[resultLocal] if != -1</div>
           </div>
           <div class="kv-row">
-            <div class="kv-k">format</div>
-            <div class="kv-v">.cvm bytecode files</div>
+            <div class="kv-k">globals</div>
+            <div class="kv-v">occupy stack [0, globalsEnd); indexed by Metadata::globalNames</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">falsey</div>
+            <div class="kv-v">only nil and false (BOOL); 0 (INT) is truthy</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">globalNames</div>
+            <div class="kv-v">map&lt;string, int&gt; — name → absolute stack slot (Metadata only)</div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="quad" data-col="2" data-row="3">
-      <div class="quad-fig">fig. 2.3 — ffi & extensions</div>
-      <div class="quad-sec">§ 14</div>
+      <div class="quad-fig">fig. 2.3 — branch superinstructions</div>
+      <div class="quad-sec">§20</div>
       <div class="qi">
-        <div class="tag">native extensions</div>
-        <div class="cell-title">FFI / DynCall</div>
-        <div class="cell-sub">calling native code</div>
-        <div class="cell-body">crono-vm exposes a C API for embedding and extension. Native functions are registered with a type signature and called via DynCall, which handles ABI-level dispatch without custom stubs.</div>
-        <div class="kv-list">
-          <div class="kv-row">
-            <div class="kv-k">mechanism</div>
-            <div class="kv-v">DynCall (libdyncall)</div>
+        <div class="tag">superinstructions</div>
+        <div class="cell-title">branch superinstr.</div>
+        <div class="cell-sub">3-word INT branch — trueTarget or falseTarget</div>
+        <div class="op-table">
+          <div class="op-head">
+            <div class="op-h">opcode</div>
+            <div class="op-h">condition</div>
+            <div class="op-h">shape</div>
           </div>
-          <div class="kv-row">
-            <div class="kv-k">signature</div>
-            <div class="kv-v">type string, e.g. "ii)i" (int,int→int)</div>
+          <div class="op-row">
+            <div class="op-c">BRANCH_LT_INT</div>
+            <div class="op-c stack">left.i32 &lt; right.i32</div>
+            <div class="op-c">3 words</div>
           </div>
-          <div class="kv-row">
-            <div class="kv-k">calling conv</div>
-            <div class="kv-v">platform default (cdecl / sysv amd64)</div>
+          <div class="op-row">
+            <div class="op-c">BRANCH_LE_INT</div>
+            <div class="op-c stack">left.i32 &lt;= right.i32</div>
+            <div class="op-c">3 words</div>
           </div>
-          <div class="kv-row">
-            <div class="kv-k">registration</div>
-            <div class="kv-v">crono_register_native(vm, name, fn, sig)</div>
+          <div class="op-row">
+            <div class="op-c">BRANCH_GT_INT</div>
+            <div class="op-c stack">left.i32 &gt; right.i32</div>
+            <div class="op-c">3 words</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">BRANCH_GE_INT</div>
+            <div class="op-c stack">left.i32 &gt;= right.i32</div>
+            <div class="op-c">3 words</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">BRANCH_EQ_INT</div>
+            <div class="op-c stack">left.i32 == right.i32</div>
+            <div class="op-c">3 words</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">BRANCH_NE_INT</div>
+            <div class="op-c stack">left.i32 != right.i32</div>
+            <div class="op-c">3 words</div>
           </div>
         </div>
-        <div class="code">// register a native function in C
-crono_register_native(vm, "math.sqrt", (void*)sqrt, "d)d"
-  // double → double
-);</div>
+        <div class="note">All six use the same 3-word encoding: [op:8, left:8, right:8, _:8] [_:8, trueTarget:16, …] [_:8, falseTarget:16, …]. Operands are INT only. Jumps to trueTarget or falseTarget (absolute bytecode word indices).</div>
       </div>
     </div>
 
     <div class="quad" data-col="3" data-row="3">
-      <div class="quad-fig">fig. 3.3 — error model</div>
-      <div class="quad-sec">§ 15</div>
+      <div class="quad-fig">fig. 3.3 — classes by index</div>
+      <div class="quad-sec">§21</div>
       <div class="qi">
-        <div class="tag">runtime errors</div>
-        <div class="cell-title">error model</div>
-        <div class="cell-sub">throw · catch · unwind</div>
-        <div class="cell-body">Errors are first-class values. Any value can be thrown. The VM unwinds the call stack until a matching catch handler is found, or terminates with an uncaught error.</div>
+        <div class="tag">objects</div>
+        <div class="cell-title">classes by index</div>
+        <div class="cell-sub">index-based field &amp; method access</div>
         <div class="op-table">
           <div class="op-head">
             <div class="op-h">opcode</div>
-            <div class="op-h">stack effect</div>
-            <div class="op-h">description</div>
+            <div class="op-h">encoding</div>
+            <div class="op-h">operation</div>
           </div>
           <div class="op-row">
-            <div class="op-c">THROW</div>
-            <div class="op-c stack">err →</div>
-            <div class="op-c">throw value as error</div>
+            <div class="op-c">INSTANTIATE_CLASS</div>
+            <div class="op-c stack">[op:8, dst:8, classReg:8, _:8]</div>
+            <div class="op-c">allocate new instance; fields initialised to NIL</div>
           </div>
           <div class="op-row">
-            <div class="op-c">TRY_BEGIN</div>
-            <div class="op-c stack">→</div>
-            <div class="op-c">push exception handler (operand: handler offset)</div>
+            <div class="op-c">BUILTIN_CONSTRUCT</div>
+            <div class="op-c stack">[op:8, dst:8, typeId:8, _:8]</div>
+            <div class="op-c">invoke builtin factory by typeId (indexes builtinFactories from getStandardNativeTypes())</div>
           </div>
           <div class="op-row">
-            <div class="op-c">TRY_END</div>
-            <div class="op-c stack">→</div>
-            <div class="op-c">pop exception handler (no error)</div>
+            <div class="op-c">GET_FIELD_REG</div>
+            <div class="op-c stack">[op:8, dst:8, obj:8, fieldSlot:8]</div>
+            <div class="op-c">dst = instance.fields[fieldSlot] (integer index)</div>
           </div>
           <div class="op-row">
-            <div class="op-c">CATCH</div>
-            <div class="op-c stack">→ err</div>
-            <div class="op-c">enter catch block, push caught error</div>
+            <div class="op-c">SET_FIELD_REG</div>
+            <div class="op-c stack">[op:8, src:8, obj:8, fieldSlot:8]</div>
+            <div class="op-c">instance.fields[fieldSlot] = src</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">INVOKE_METHOD</div>
+            <div class="op-c stack">[op:8,dst:8,obj:8,methodSlot:8] [argc:8,_:24] [argSlots…]</div>
+            <div class="op-c">call instance.cls.methodOffsets[methodSlot]; receiver pushed as arg[0]</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quad" data-col="4" data-row="3">
+      <div class="quad-fig">fig. 4.3 — OS threads &amp; FFI</div>
+      <div class="quad-sec">§22</div>
+      <div class="qi">
+        <div class="tag">concurrency · FFI</div>
+        <div class="cell-title">OS threads &amp; FFI</div>
+        <div class="cell-sub">LAUNCH_NATIVE · dyncall · DynamicFunction</div>
+        <div class="op-table">
+          <div class="op-head">
+            <div class="op-h">opcode</div>
+            <div class="op-h">encoding</div>
+            <div class="op-h">operation</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">LAUNCH_NATIVE</div>
+            <div class="op-c stack">[op:8, callee:8, dst:8, argc:8] [argSlots…]</div>
+            <div class="op-c">run NATIVE object on OS thread; dst = SyncHandle*; result enqueued via memory-&gt;enqueueWake; threads joined on VM::~VM</div>
           </div>
         </div>
         <div class="kv-list">
           <div class="kv-row">
-            <div class="kv-k">built-in errors</div>
-            <div class="kv-v">TypeError · IndexError · LoadError</div>
+            <div class="kv-k">FFI::call</div>
+            <div class="kv-v">FFI::call(void* func, vector&lt;Value&gt; args, FFIResultType) wraps dyncall</div>
           </div>
           <div class="kv-row">
-            <div class="kv-k">stack trace</div>
-            <div class="kv-v">attached to error object</div>
+            <div class="kv-k">arg types</div>
+            <div class="kv-v">INT, LONG, DOUBLE, FLOAT, BOOL, OBJ (as pointer)</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">FFIResultType</div>
+            <div class="kv-v">INTEGER (→ int32_t), DOUBLE, POINTER (→ vm::Object*), VOID_TYPE</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">return heuristic</div>
+            <div class="kv-v">any float/double arg → DOUBLE, else INTEGER (unreliable)</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">DynamicFunction</div>
+            <div class="kv-v">holds raw void* symbol; FFI::getSymbol wraps dlFindSymbol</div>
           </div>
         </div>
+        <div class="note">⚠ LAUNCH_NATIVE is only callable on NATIVE objects. memory may be nullptr when called from background thread context.</div>
       </div>
     </div>
 
-    <!-- Row 4 -->
-    <div class="quad" data-col="0" data-row="4">
-      <div class="quad-fig">fig. 0.4 — quick start</div>
-      <div class="quad-sec">§ 16</div>
+    <div class="quad" data-col="5" data-row="3">
+      <div class="quad-fig">fig. 5.3 — known limitations</div>
+      <div class="quad-sec">§23</div>
       <div class="qi">
-        <div class="tag">getting started</div>
-        <div class="cell-title">quick start</div>
-        <div class="cell-sub"></div>
-        <div class="code"># build from source
-git clone https://github.com/racso/crono-lang
-cd crono-lang/crono-vm && make
-
-# compile a .cs file to bytecode
-cronoc hello.cs -o hello.cvm
-
-# run the bytecode
-crono hello.cvm
-
-# inspect disassembly
-crono --disasm hello.cvm
-
-# run with GC debug output
-crono --gc-debug hello.cvm</div>
-        <a href="#" class="btn">→ installation guide</a>
-      </div>
-    </div>
-
-    <div class="quad" data-col="1" data-row="4">
-      <div class="quad-fig">fig. 1.4 — example: hello world</div>
-      <div class="quad-sec">§ 17</div>
-      <div class="qi">
-        <div class="tag">example</div>
-        <div class="cell-title">hello, world</div>
-        <div class="cell-sub"></div>
-        <div class="code">// hello.cs — crono-sharp source
-print("hello, world");</div>
-        <div class="code">; compiled bytecode (disassembly)
-PUSH_STR "hello, world"
-CALL print, 1
-POP
-HALT</div>
-        <div class="cell-body">The compiler emits PUSH_STR to load the string constant, CALL to invoke the built-in print function, POP to discard the return value, then HALT.</div>
-      </div>
-    </div>
-
-    <div class="quad" data-col="2" data-row="4">
-      <div class="quad-fig">fig. 2.4 — example: fibonacci</div>
-      <div class="quad-sec">§ 18</div>
-      <div class="qi">
-        <div class="tag">example — recursion</div>
-        <div class="cell-title">fibonacci</div>
-        <div class="cell-sub"></div>
-        <div class="code">// fibonacci.cs
-int fib(int n) {
-  if (n <= 1) return n;
-  return fib(n - 1) + fib(n - 2);
-}
-print(fib(10));</div>
-        <div class="code">; key bytecode (inner loop)
-LOAD_LOCAL 0    ; n
-PUSH_INT 1
-LTE
-JMPF +3
-LOAD_LOCAL 0
-RET
-LOAD_LOCAL 0
-PUSH_INT 1
-SUB
-CALL fib, 1
-LOAD_LOCAL 0
-PUSH_INT 2
-SUB
-CALL fib, 1
-ADD
-RET</div>
-      </div>
-    </div>
-
-    <div class="quad" data-col="3" data-row="4">
-      <div class="quad-fig">fig. 3.4 — example: native extension</div>
-      <div class="quad-sec">§ 19</div>
-      <div class="qi">
-        <div class="tag">example — ffi</div>
-        <div class="cell-title">native extension</div>
-        <div class="cell-sub"></div>
-        <div class="code">// embed crono-vm in C
-#include "crono.h"
-int main() {
-  CronoVM *vm = crono_new();
-  // register native sqrt
-  crono_register_native(vm, "math.sqrt", sqrt, "d)d"
-  );
-  // load and run bytecode
-  crono_load_file(vm, "prog.cvm");
-  crono_run(vm);
-  crono_free(vm);
-}</div>
-        <div class="cell-body">See § 14 (FFI / DynCall) for signature syntax and the full C API reference.</div>
+        <div class="tag">limitations</div>
+        <div class="cell-title">known limitations</div>
+        <div class="cell-sub">8 documented issues · source-verified</div>
+        <div class="kv-list">
+          <div class="kv-row">
+            <div class="kv-k">1 — C API types</div>
+            <div class="kv-v">LONG / DOUBLE not in C API — internalToC drops LONG silently to CRONO_VAL_NIL; DOUBLE maps to FLOAT. 64-bit ints/doubles lose data across the C boundary.</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">2 — VOID_TYPE dead</div>
+            <div class="kv-v">ValueType::VOID_TYPE is declared but has no constructor, accessor, or typeOf branch. Not produced anywhere at runtime.</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">3 — WIDE no-op</div>
+            <div class="kv-v">lbl_WIDE does nothing. No prefix handling in deserializer or VM loop. Listed in opcodes.def but non-functional.</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">4 — dynamic needs meta</div>
+            <div class="kv-v">INVOKE_METHOD_BY_NAME, GET_FIELD_BY_NAME, SET_FIELD_BY_NAME throw if metadata == nullptr. Cannot use in production builds that strip metadata.</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">5 — FFI heuristic</div>
+            <div class="kv-v">Return type inferred from args: any float/double → DOUBLE, else INTEGER. Unreliable for float-returning functions with no float args.</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">6 — CATCH ≡ FINALLY</div>
+            <div class="kv-v">ExceptionEntry CATCH vs FINALLY not distinguished at runtime — both redirect to handlerPC identically.</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">7 — NativeObject trace</div>
+            <div class="kv-v">NativeObject fields not auto-traced. Provide NativeObject::trace or GC may collect values stored inside native objects.</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">8 — constant strings only</div>
+            <div class="kv-v">Memory::addConstant rejects non-string objects at runtime. Only primitives and strings may appear in the constant pool.</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1566,7 +1830,7 @@ int main() {
 </div>
 
 <script>
-const COLS = 4, ROWS = 5;
+const COLS = 6, ROWS = 4;
 const PC_MAX = 720; // multiple of 40 → grid aligned on desktop (≈ HD)
 const MOBILE_BREAK = 768;
 
