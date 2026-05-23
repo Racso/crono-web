@@ -36,8 +36,7 @@ html, body {
 
 /* ── NAV ────────────────────────────────────────── */
 .nav {
-  position: sticky;
-  left: 0;
+  position: relative;
   width: 100vw;
   height: var(--nav-h);
   background: var(--void);
@@ -1905,10 +1904,13 @@ function snapTo(col, row) {
   });
 }
 
+const nav = document.querySelector('.nav');
+
 function updateActive() {
   const { qw, qh, pw, ph } = quadDims();
   const cc = Math.max(0, Math.min(COLS-1, Math.round((wrap.scrollLeft - pw/2) / qw)));
   const rr = Math.max(0, Math.min(ROWS-1, Math.round((wrap.scrollTop - ph/2) / qh)));
+  nav.style.transform = `translateX(${wrap.scrollLeft}px)`;
 }
 
 wrap.addEventListener('scroll', updateActive, { passive: true });
