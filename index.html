@@ -36,10 +36,9 @@ html, body {
 
 /* ── NAV ────────────────────────────────────────── */
 .nav {
-  position: fixed;
-  top: 0;
+  position: sticky;
   left: 0;
-  right: 0;
+  width: 100vw;
   height: var(--nav-h);
   background: var(--void);
   border-bottom: 1px solid var(--n3);
@@ -47,7 +46,7 @@ html, body {
   align-items: center;
   justify-content: space-between;
   z-index: 200;
-  will-change: transform;
+  flex-shrink: 0;
 }
 
 .nav-logo {
@@ -116,7 +115,7 @@ html, body {
 /* ── WRAP / CANVAS ──────────────────────────────── */
 .wrap {
   position: fixed;
-  top: var(--nav-h);
+  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
@@ -656,6 +655,7 @@ html, body {
 </head>
 <body>
 
+<div id="wrap" class="wrap">
 <nav class="nav">
   <a href="/" class="nav-logo">
     <span class="accent">crono</span>-lang
@@ -665,8 +665,6 @@ html, body {
     <span class="nav-hint" style="padding: 0 18px; border-left: 1px solid var(--n3);">drag · map ↘ · arrows</span>
   </div>
 </nav>
-
-<div id="wrap" class="wrap">
   <div id="canvas" class="canvas">
     <div class="frame">
       <div class="cbr cbr--tl"></div>
@@ -1899,25 +1897,21 @@ window.addEventListener('resize', () => {
   updateActive();
 });
 
+const NAV_H = 48;
+
 function snapTo(col, row) {
   const { qw, qh, pw, ph } = quadDims();
   wrap.scrollTo({
     left: col === 0 ? 0 : pw + col * qw,
-    top: row === 0 ? 0 : ph + row * qh,
+    top: row === 0 ? 0 : NAV_H + ph + row * qh,
     behavior: 'smooth'
   });
 }
 
-const nav = document.querySelector('.nav');
-const NAV_H = 48;
-
 function updateActive() {
   const { qw, qh, pw, ph } = quadDims();
   const cc = Math.max(0, Math.min(COLS-1, Math.round((wrap.scrollLeft - pw/2) / qw)));
-  const rr = Math.max(0, Math.min(ROWS-1, Math.round((wrap.scrollTop - ph/2) / qh)));
-  const hideY = Math.min(wrap.scrollTop, NAV_H);
-  nav.style.transform = `translateY(${-hideY}px)`;
-  wrap.style.top = (NAV_H - hideY) + 'px';
+  const rr = Math.max(0, Math.min(ROWS-1, Math.round((wrap.scrollTop - NAV_H - ph/2) / qh)));
 }
 
 wrap.addEventListener('scroll', updateActive, { passive: true });
@@ -1949,7 +1943,7 @@ window.addEventListener('mouseup', () => {
 document.addEventListener('keydown', e => {
   const { qw, qh, pw, ph } = quadDims();
   const cc = Math.max(0, Math.min(COLS-1, Math.round((wrap.scrollLeft - pw/2) / qw)));
-  const rr = Math.max(0, Math.min(ROWS-1, Math.round((wrap.scrollTop - ph/2) / qh)));
+  const rr = Math.max(0, Math.min(ROWS-1, Math.round((wrap.scrollTop - NAV_H - ph/2) / qh)));
   const m = {
     ArrowRight: [cc+1, rr],
     ArrowLeft: [cc-1, rr],
