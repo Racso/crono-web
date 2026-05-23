@@ -36,8 +36,10 @@ html, body {
 
 /* ── NAV ────────────────────────────────────────── */
 .nav {
-  position: relative;
-  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   height: var(--nav-h);
   background: var(--void);
   border-bottom: 1px solid var(--n3);
@@ -45,6 +47,7 @@ html, body {
   align-items: center;
   justify-content: space-between;
   z-index: 200;
+  will-change: transform;
 }
 
 .nav-logo {
@@ -113,7 +116,7 @@ html, body {
 /* ── WRAP / CANVAS ──────────────────────────────── */
 .wrap {
   position: fixed;
-  top: 0;
+  top: var(--nav-h);
   left: 0;
   right: 0;
   bottom: 0;
@@ -653,7 +656,6 @@ html, body {
 </head>
 <body>
 
-<div id="wrap" class="wrap">
 <nav class="nav">
   <a href="/" class="nav-logo">
     <span class="accent">crono</span>-lang
@@ -663,6 +665,8 @@ html, body {
     <span class="nav-hint" style="padding: 0 18px; border-left: 1px solid var(--n3);">drag · map ↘ · arrows</span>
   </div>
 </nav>
+
+<div id="wrap" class="wrap">
   <div id="canvas" class="canvas">
     <div class="frame">
       <div class="cbr cbr--tl"></div>
@@ -1905,12 +1909,15 @@ function snapTo(col, row) {
 }
 
 const nav = document.querySelector('.nav');
+const NAV_H = 48;
 
 function updateActive() {
   const { qw, qh, pw, ph } = quadDims();
   const cc = Math.max(0, Math.min(COLS-1, Math.round((wrap.scrollLeft - pw/2) / qw)));
   const rr = Math.max(0, Math.min(ROWS-1, Math.round((wrap.scrollTop - ph/2) / qh)));
-  nav.style.transform = `translateX(${wrap.scrollLeft}px)`;
+  const hideY = Math.min(wrap.scrollTop, NAV_H);
+  nav.style.transform = `translateY(${-hideY}px) translateX(${wrap.scrollLeft}px)`;
+  wrap.style.top = (NAV_H - hideY) + 'px';
 }
 
 wrap.addEventListener('scroll', updateActive, { passive: true });
@@ -1918,7 +1925,7 @@ updateActive();
 
 let panning = false, sx, sy, sl, st;
 wrap.addEventListener('mousedown', e => {
-  if (e.target.closest('a, button, .nav')) return;
+  if (e.target.closest('a, button')) return;
   panning = true;
   sx = e.clientX;
   sy = e.clientY;
