@@ -36,10 +36,9 @@ html, body {
 
 /* ── NAV ────────────────────────────────────────── */
 .nav {
-  position: fixed;
-  top: 0;
+  position: sticky;
   left: 0;
-  right: 0;
+  width: 100vw;
   height: var(--nav-h);
   background: var(--void);
   border-bottom: 1px solid var(--n3);
@@ -115,7 +114,7 @@ html, body {
 /* ── WRAP / CANVAS ──────────────────────────────── */
 .wrap {
   position: fixed;
-  top: var(--nav-h);
+  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
@@ -655,6 +654,7 @@ html, body {
 </head>
 <body>
 
+<div id="wrap" class="wrap">
 <nav class="nav">
   <a href="/" class="nav-logo">
     <span class="accent">crono</span>-lang
@@ -664,8 +664,6 @@ html, body {
     <span class="nav-hint" style="padding: 0 18px; border-left: 1px solid var(--n3);">drag · map ↘ · arrows</span>
   </div>
 </nav>
-
-<div id="wrap" class="wrap">
   <div id="canvas" class="canvas">
     <div class="frame">
       <div class="cbr cbr--tl"></div>
@@ -1918,7 +1916,7 @@ updateActive();
 
 let panning = false, sx, sy, sl, st;
 wrap.addEventListener('mousedown', e => {
-  if (e.target.closest('a, button')) return;
+  if (e.target.closest('a, button, .nav')) return;
   panning = true;
   sx = e.clientX;
   sy = e.clientY;
