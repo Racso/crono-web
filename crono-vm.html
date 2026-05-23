@@ -1,74 +1,1699 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>crono-vm — crono-lang</title>
-  <meta name="description" content="crono-vm: a stack-based bytecode virtual machine.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne+Mono&family=Figtree:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="docs.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>crono-vm — technical reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne+Mono&family=Figtree:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void: #222c33;
+  --n2: #29333e;
+  --n3: #313f4c;
+  --n4: #6a8090;
+  --n5: #ccd6e0;
+  --vanilla: #fefdfa;
+  --crono: #c07848;
+  --nav-h: 48px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--void);
+  font-family: 'Syne Mono', monospace;
+  color: var(--n5);
+}
+
+/* ── NAV ────────────────────────────────────────── */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-h);
+  background: var(--void);
+  border-bottom: 1px solid var(--n3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 200;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--vanilla);
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  padding: 0 24px;
+  height: 100%;
+  border-right: 1px solid var(--n3);
+  transition: background 0.15s;
+}
+
+.nav-logo:hover {
+  background: var(--n2);
+}
+
+.nav-logo .accent {
+  color: var(--crono);
+}
+
+.nav-section {
+  font-size: 10px;
+  color: var(--crono);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.nav-hint {
+  font-size: 8px;
+  color: var(--n4);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.nav-links {
+  display: flex;
+  height: 100%;
+}
+
+.nav-links a {
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  font-size: 11px;
+  color: var(--n4);
+  letter-spacing: 0.08em;
+  border-left: 1px solid var(--n3);
+  text-decoration: none;
+  transition: color 0.15s, background 0.15s;
+}
+
+.nav-links a:hover {
+  color: var(--vanilla);
+  background: var(--n2);
+}
+
+.nav-links a.active {
+  color: var(--crono);
+  background: var(--n2);
+}
+
+/* ── WRAP / CANVAS ──────────────────────────────── */
+.wrap {
+  position: fixed;
+  top: var(--nav-h);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: scroll;
+  scrollbar-width: none;
+  cursor: grab;
+}
+
+.wrap::-webkit-scrollbar {
+  display: none;
+}
+
+.wrap.panning {
+  cursor: grabbing;
+}
+
+.canvas {
+  position: relative;
+  background-color: var(--void);
+  background-image: linear-gradient(rgba(49,63,76,0.36) 1px, transparent 1px), linear-gradient(90deg, rgba(49,63,76,0.36) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ── FRAME ──────────────────────────────────────── */
+.frame {
+  position: absolute;
+  inset: 40px;
+  border: 1px solid var(--n4);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.cbr {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+}
+
+.cbr--tl {
+  top:-8px;
+  left:-8px;
+  border-top:2px solid var(--crono);
+  border-left:2px solid var(--crono);
+}
+
+.cbr--tr {
+  top:-8px;
+  right:-8px;
+  border-top:2px solid var(--crono);
+  border-right:2px solid var(--crono);
+}
+
+.cbr--bl {
+  bottom:-8px;
+  left:-8px;
+  border-bottom:2px solid var(--crono);
+  border-left:2px solid var(--crono);
+}
+
+.cbr--br {
+  bottom:-8px;
+  right:-8px;
+  border-bottom:2px solid var(--crono);
+  border-right:2px solid var(--crono);
+}
+
+.tick {
+  position: absolute;
+  background: var(--n4);
+}
+
+.tick--tc {
+  height:1px;
+  width:16px;
+  top:-1px;
+  left:50%;
+  transform:translateX(-50%);
+}
+
+.tick--bc {
+  height:1px;
+  width:16px;
+  bottom:-1px;
+  left:50%;
+  transform:translateX(-50%);
+}
+
+.tick--lc {
+  width:1px;
+  height:16px;
+  left:-1px;
+  top:50%;
+  transform:translateY(-50%);
+}
+
+.tick--rc {
+  width:1px;
+  height:16px;
+  right:-1px;
+  top:50%;
+  transform:translateY(-50%);
+}
+
+/* ── CELLS ──────────────────────────────────────── */
+.quad {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-right: 1px solid var(--n3);
+  border-bottom: 1px solid var(--n3);
+}
+
+.quad[data-col="3"] {
+  border-right: none;
+}
+
+.quad[data-row="4"] {
+  border-bottom: none;
+}
+
+/* fig + section labels */
+.quad-fig {
+  position: absolute;
+  font-size: 8px;
+  color: var(--n4);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.quad-fig::before {
+  content:'';
+  display:inline-block;
+  width:5px;
+  height:5px;
+  border:1px solid var(--crono);
+  transform:rotate(45deg);
+  flex-shrink:0;
+}
+
+.quad[data-col="0"] .quad-fig,
+.quad[data-col="1"] .quad-fig,
+.quad[data-col="2"] .quad-fig {
+  left: calc(var(--pw, 36px) / 2);
+}
+
+.quad[data-col="3"] .quad-fig {
+  right: calc(var(--pw, 36px) / 2);
+  flex-direction: row-reverse;
+}
+
+.quad-fig {
+  top: calc(var(--ph, 36px) / 3);
+}
+
+.quad-sec {
+  position: absolute;
+  font-size: 9px;
+  color: var(--n3);
+  letter-spacing: 0.16em;
+}
+
+.quad[data-col="3"] .quad-sec {
+  left: calc(var(--pw, 36px) / 2);
+}
+
+.quad:not([data-col="3"]) .quad-sec {
+  right: calc(var(--pw, 36px) / 2);
+}
+
+.quad-sec {
+  top: calc(var(--ph, 36px) / 3);
+}
+
+/* inner padding — content area, scrolls only as last resort */
+/* top = 1 full grid unit (clears the abs-positioned quad-fig label at top:16px) */
+/* left/right/bottom = half grid unit — matches label's own left:pw/2 offset */
+.qi {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  padding: var(--ph, 36px) calc(var(--pw, 36px) / 2) calc(var(--ph, 36px) / 2) calc(var(--pw, 36px) / 2);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--n3) transparent;
+}
+
+.qi::-webkit-scrollbar {
+  width: 4px;
+}
+
+.qi::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.qi::-webkit-scrollbar-thumb {
+  background: var(--n3);
+  border-radius: 2px;
+}
+
+.quad[data-col="3"] .qi {
+  align-items: flex-end;
+  text-align: right;
+}
+
+/* ── CONTENT ATOMS ──────────────────────────────── */
+/* Font sizes scale with --qh (height is the limiting axis) */
+.tag {
+  font-size: clamp(7px, calc(var(--qh, 560px) * 0.013), 9px);
+  color: var(--crono);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: clamp(6px, calc(var(--qh, 560px) * 0.015), 10px);
+}
+
+.cell-title {
+  font-size: clamp(15px, calc(var(--qh, 560px) * 0.048), 34px);
+  color: var(--vanilla);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-bottom: clamp(6px, calc(var(--qh, 560px) * 0.015), 10px);
+}
+
+.cell-sub {
+  font-size: clamp(7px, calc(var(--qh, 560px) * 0.015), 9px);
+  color: var(--n4);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-bottom: clamp(10px, calc(var(--qh, 560px) * 0.024), 16px);
+}
+
+.cell-body {
+  font-family: 'Figtree', sans-serif;
+  font-size: clamp(10px, calc(var(--qh, 560px) * 0.021), 13px);
+  color: var(--n4);
+  line-height: 1.75;
+  font-weight: 300;
+  max-width: calc(var(--qw, 360px) * 0.95);
+  margin-bottom: clamp(12px, calc(var(--qh, 560px) * 0.029), 20px);
+}
+
+.quad[data-col="3"] .cell-body {
+  margin-left: auto;
+}
+
+/* stat row */
+.stats {
+  display: flex;
+  gap: clamp(12px, calc(var(--qw, 360px) * 0.05), 20px);
+  margin-bottom: clamp(12px, calc(var(--qh, 560px) * 0.029), 20px);
+  flex-wrap: wrap;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-v {
+  font-size: clamp(14px, calc(var(--qh, 560px) * 0.039), 22px);
+  color: var(--vanilla);
+  letter-spacing: -0.02em;
+}
+
+.stat-k {
+  font-size: clamp(7px, calc(var(--qh, 560px) * 0.013), 9px);
+  color: var(--n4);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* opcode table */
+.op-table {
+  border: 1px solid var(--n3);
+  font-size: clamp(9px, calc(var(--qh, 560px) * 0.0196), 11px);
+  max-width: 100%;
+  margin-bottom: clamp(10px, calc(var(--qh, 560px) * 0.024), 16px);
+  background: var(--void);
+}
+
+.op-head {
+  display: grid;
+  grid-template-columns: calc(var(--qw, 360px) * 0.27) calc(var(--qw, 360px) * 0.32) 1fr;
+  background: var(--n2);
+  border-bottom: 1px solid var(--n3);
+}
+
+.op-row {
+  display: grid;
+  grid-template-columns: calc(var(--qw, 360px) * 0.27) calc(var(--qw, 360px) * 0.32) 1fr;
+  border-bottom: 1px solid var(--n3);
+  transition: background 0.1s;
+}
+
+.op-row:last-child {
+  border-bottom: none;
+}
+
+.op-row:hover {
+  background: var(--n2);
+}
+
+.op-h, .op-c {
+  padding: clamp(3px, calc(var(--qh, 560px) * 0.008), 5px) clamp(6px, calc(var(--qw, 360px) * 0.025), 10px);
+}
+
+.op-h {
+  font-size: clamp(7px, calc(var(--qh, 560px) * 0.013), 8px);
+  color: var(--n4);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  border-right: 1px solid var(--n3);
+}
+
+.op-h:last-child {
+  border-right: none;
+}
+
+.op-c {
+  color: var(--n5);
+  border-right: 1px solid var(--n3);
+  line-height: 1.4;
+}
+
+.op-c:last-child {
+  border-right: none;
+  color: var(--n4);
+}
+
+.op-c:first-child {
+  color: var(--crono);
+  font-family: 'Syne Mono', monospace;
+  letter-spacing: 0.05em;
+}
+
+.op-c.stack {
+  font-family: 'Syne Mono', monospace;
+  color: var(--n5);
+}
+
+/* type table */
+.type-table {
+  border: 1px solid var(--n3);
+  margin-bottom: clamp(10px, calc(var(--qh, 400px) * 0.024), 16px);
+  background: var(--void);
+}
+
+.type-row {
+  display: grid;
+  grid-template-columns: calc(var(--qw, 360px) * 0.23) calc(var(--qw, 360px) * 0.20) 1fr;
+  border-bottom: 1px solid var(--n3);
+}
+
+.type-row:last-child {
+  border-bottom: none;
+}
+
+.type-c {
+  padding: clamp(4px, calc(var(--qh, 560px) * 0.009), 6px) clamp(8px, calc(var(--qw, 360px) * 0.030), 12px);
+  font-size: clamp(9px, calc(var(--qh, 560px) * 0.0196), 11px);
+  border-right: 1px solid var(--n3);
+}
+
+.type-c:last-child {
+  border-right: none;
+  color: var(--n4);
+  font-family: 'Figtree', sans-serif;
+}
+
+.type-c:first-child {
+  color: var(--crono);
+}
+
+.type-c.bits {
+  color: var(--n5);
+  text-align: center;
+}
+
+/* key-value pairs */
+.kv-list {
+  border: 1px solid var(--n3);
+  margin-bottom: clamp(10px, calc(var(--qh, 400px) * 0.024), 16px);
+  background: var(--void);
+}
+
+.kv-row {
+  display: grid;
+  grid-template-columns: calc(var(--qw, 360px) * 0.30) 1fr;
+  border-bottom: 1px solid var(--n3);
+}
+
+.kv-row:last-child {
+  border-bottom: none;
+}
+
+.kv-k {
+  padding: clamp(4px, calc(var(--qh, 560px) * 0.011), 7px) clamp(8px, calc(var(--qw, 360px) * 0.030), 12px);
+  font-size: clamp(8px, calc(var(--qh, 560px) * 0.016), 10px);
+  color: var(--crono);
+  border-right: 1px solid var(--n3);
+  letter-spacing: 0.04em;
+}
+
+.kv-v {
+  padding: clamp(4px, calc(var(--qh, 560px) * 0.011), 7px) clamp(8px, calc(var(--qw, 360px) * 0.030), 12px);
+  font-size: clamp(9px, calc(var(--qh, 560px) * 0.0196), 11px);
+  color: var(--n5);
+}
+
+/* arch diagram */
+.arch {
+  margin-bottom: clamp(10px, calc(var(--qh, 400px) * 0.024), 16px);
+}
+
+.arch-node {
+  border: 1px solid var(--n3);
+  padding: clamp(5px, calc(var(--qh, 560px) * 0.012), 8px) clamp(9px, calc(var(--qw, 360px) * 0.038), 14px);
+  font-size: clamp(9px, calc(var(--qh, 560px) * 0.020), 12px);
+  color: var(--n5);
+  background: var(--void);
+}
+
+.arch-node .atag {
+  font-size: clamp(7px, calc(var(--qh, 560px) * 0.013), 8px);
+  color: var(--crono);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.arch-conn {
+  width: 1px;
+  height: clamp(8px, calc(var(--qh, 560px) * 0.018), 12px);
+  background: var(--n3);
+  margin-left: 18px;
+}
+
+/* code */
+.code {
+  background: var(--n2);
+  border: 1px solid var(--n3);
+  padding: clamp(8px, calc(var(--qh, 560px) * 0.018), 12px) clamp(10px, calc(var(--qw, 360px) * 0.038), 14px);
+  font-size: clamp(9px, calc(var(--qh, 560px) * 0.0196), 11px);
+  color: var(--n5);
+  line-height: 1.7;
+  white-space: pre;
+  overflow-x: auto;
+  margin-bottom: clamp(10px, calc(var(--qh, 560px) * 0.024), 16px);
+}
+
+.code .kw {
+  color: var(--crono);
+}
+
+.code .cm {
+  color: var(--n4);
+}
+
+.code .st {
+  color: #8ec07c;
+}
+
+.code .op {
+  color: #83a598;
+}
+
+.code .num {
+  color: #d3869b;
+}
+
+/* note box */
+.note {
+  border: 1px solid var(--n3);
+  border-left: 3px solid var(--crono);
+  padding: clamp(7px, calc(var(--qh, 560px) * 0.016), 10px) clamp(10px, calc(var(--qw, 360px) * 0.038), 14px);
+  font-size: clamp(9px, calc(var(--qh, 560px) * 0.0196), 11px);
+  color: var(--n4);
+  line-height: 1.65;
+  margin-bottom: clamp(10px, calc(var(--qh, 560px) * 0.024), 16px);
+  font-family: 'Figtree', sans-serif;
+}
+
+/* pill badge */
+.badge {
+  display: inline-block;
+  font-size: 8px;
+  border: 1px solid var(--n3);
+  color: var(--n4);
+  padding: 1px 7px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-right: 6px;
+  margin-bottom: 12px;
+}
+
+.badge.core {
+  border-color: var(--crono);
+  color: var(--crono);
+}
+
+/* btn */
+.btn {
+  font-family: 'Syne Mono', monospace;
+  font-size: 10px;
+  padding: 7px 16px;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s;
+  border: 1px solid var(--n3);
+  color: var(--n4);
+}
+
+.btn:hover {
+  color: var(--vanilla);
+  border-color: var(--n4);
+  background: var(--n2);
+}
+
+.btn.primary {
+  background: var(--crono);
+  color: var(--void);
+  border-color: var(--crono);
+}
+
+.btn.primary:hover {
+  background: transparent;
+  color: var(--crono);
+}
+</style>
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav>
-    <a href="/" class="nav-logo">
-      <svg width="15" height="20" viewBox="-2 -2 24 24" preserveAspectRatio="none" aria-hidden="true">
-        <g transform="rotate(-45,10,10)">
-          <rect x="2"  y="2"  width="8" height="8" fill="#c07848"/>
-          <rect x="2"  y="10" width="8" height="8" fill="#fefdfa"/>
-          <rect x="10" y="10" width="8" height="8" fill="#c07848"/>
-        </g>
-      </svg>
-      crono<span class="accent">-lang</span>
-    </a>
-    <div class="nav-links">
-      <a href="crono-vm.html" class="nav-active">crono-vm</a>
-      <a href="crono-sharp.html">crono-sharp</a>
-    </div>
-  </nav>
-
-  <div class="docs-layout">
-    <!-- SIDEBAR -->
-    <aside class="docs-sidebar">
-      <div class="sidebar-section">
-        <div class="sidebar-label">overview</div>
-        <a href="#introduction" class="sidebar-link">introduction</a>
-        <a href="#architecture" class="sidebar-link">architecture</a>
-        <a href="#execution-model" class="sidebar-link">execution model</a>
-      </div>
-      <div class="sidebar-section">
-        <div class="sidebar-label">reference</div>
-        <a href="#opcodes" class="sidebar-link">instruction set</a>
-        <a href="#value-types" class="sidebar-link">value types</a>
-        <a href="#gc" class="sidebar-link">garbage collector</a>
-        <a href="#ffi" class="sidebar-link">ffi & extensions</a>
-      </div>
-    </aside>
-
-    <!-- CONTENT -->
-    <main class="docs-content">
-      <div class="docs-header">
-        <div class="docs-tag">core</div>
-        <h1 class="docs-title">crono-vm</h1>
-        <p class="docs-subtitle">
-          A stack-based bytecode virtual machine. Precise semantics,
-          mark-and-sweep garbage collection, and a native FFI layer.
-        </p>
-      </div>
-
-      <div class="docs-placeholder">
-        <span>documentation in progress</span>
-      </div>
-    </main>
+<nav class="nav">
+  <a href="/" class="nav-logo">
+    <span class="accent">crono</span>-lang
+  </a>
+  <div class="nav-section">crono-vm — technical reference</div>
+  <div class="nav-links">
+    <span class="nav-hint" style="padding: 0 18px; border-left: 1px solid var(--n3);">drag · map ↘ · arrows</span>
   </div>
+</nav>
 
-  <footer>
-    <span class="footer-sig">Made with <span class="spade">♠</span> by Racso</span>
-  </footer>
+<div id="wrap" class="wrap">
+  <div id="canvas" class="canvas">
+    <div class="frame">
+      <div class="cbr cbr--tl"></div>
+      <div class="cbr cbr--tr"></div>
+      <div class="cbr cbr--bl"></div>
+      <div class="cbr cbr--br"></div>
+      <div class="tick tick--tc"></div>
+      <div class="tick tick--bc"></div>
+      <div class="tick tick--lc"></div>
+      <div class="tick tick--rc"></div>
+    </div>
+
+    <!-- Row 0 -->
+    <div class="quad" data-col="0" data-row="0">
+      <div class="quad-fig">fig. 0.0 — overview</div>
+      <div class="quad-sec">§ 0</div>
+      <div class="qi">
+        <div class="tag">core</div>
+        <div class="cell-title">crono-vm</div>
+        <div class="cell-sub">virtual machine reference</div>
+        <div style="margin-bottom: 1.5em;">
+          <div class="stats">
+            <div class="stat">
+              <div class="stat-v">~45</div>
+              <div class="stat-k">opcodes</div>
+            </div>
+            <div class="stat">
+              <div class="stat-v">7</div>
+              <div class="stat-k">value types</div>
+            </div>
+            <div class="stat">
+              <div class="stat-v">M&amp;S</div>
+              <div class="stat-k">gc</div>
+            </div>
+          </div>
+        </div>
+        <div class="cell-body">A stack-based bytecode virtual machine with precisely defined semantics. The execution foundation for the entire crono ecosystem — designed for clarity and extensibility first.</div>
+        <a href="#" class="btn primary">→ quick start</a>
+      </div>
+    </div>
+
+    <div class="quad" data-col="1" data-row="0">
+      <div class="quad-fig">fig. 1.0 — architecture</div>
+      <div class="quad-sec">§ 1</div>
+      <div class="qi">
+        <div class="tag">internals</div>
+        <div class="cell-title">architecture</div>
+        <div class="cell-sub">components & data flow</div>
+        <div class="arch">
+          <div class="arch-node">
+            <div class="atag">input</div>
+            bytecode (.cvm file)
+          </div>
+          <div class="arch-conn"></div>
+          <div class="arch-node">
+            <div class="atag">loader</div>
+            module loader & linker
+          </div>
+          <div class="arch-conn"></div>
+          <div class="arch-node">
+            <div class="atag">dispatch</div>
+            instruction dispatcher
+          </div>
+          <div class="arch-conn"></div>
+          <div class="arch-node">
+            <div class="atag">stack</div>
+            operand stack + call frames
+          </div>
+          <div class="arch-conn"></div>
+          <div class="arch-node">
+            <div class="atag">heap</div>
+            managed heap + GC
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quad" data-col="2" data-row="0">
+      <div class="quad-fig">fig. 2.0 — execution model</div>
+      <div class="quad-sec">§ 2</div>
+      <div class="qi">
+        <div class="tag">runtime</div>
+        <div class="cell-title">execution model</div>
+        <div class="cell-sub">stack, frames & dispatch</div>
+        <div class="cell-body">The VM maintains an operand stack and a call stack of frames. Each frame holds its own locals, a reference to its closure, and a return address.</div>
+        <div class="kv-list">
+          <div class="kv-row">
+            <div class="kv-k">dispatch</div>
+            <div class="kv-v">direct threaded (switch)</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">operand stack</div>
+            <div class="kv-v">grows upward, 256 slots default</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">call frames</div>
+            <div class="kv-v">linked list, heap-allocated</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">locals</div>
+            <div class="kv-v">index-addressed within frame</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">upvalues</div>
+            <div class="kv-v">captured by reference, closed on exit</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quad" data-col="3" data-row="0">
+      <div class="quad-fig">fig. 3.0 — value types</div>
+      <div class="quad-sec">§ 3</div>
+      <div class="qi">
+        <div class="tag">type system</div>
+        <div class="cell-title">value types</div>
+        <div class="cell-sub">7 first-class types</div>
+        <div class="type-table">
+          <div class="type-row">
+            <div class="type-c">nil</div>
+            <div class="type-c bits">—</div>
+            <div class="type-c">absence of value</div>
+          </div>
+          <div class="type-row">
+            <div class="type-c">bool</div>
+            <div class="type-c bits">1</div>
+            <div class="type-c">true or false</div>
+          </div>
+          <div class="type-row">
+            <div class="type-c">int</div>
+            <div class="type-c bits">64</div>
+            <div class="type-c">signed integer</div>
+          </div>
+          <div class="type-row">
+            <div class="type-c">float</div>
+            <div class="type-c bits">64</div>
+            <div class="type-c">IEEE 754 double</div>
+          </div>
+          <div class="type-row">
+            <div class="type-c">string</div>
+            <div class="type-c bits">heap</div>
+            <div class="type-c">immutable UTF-8</div>
+          </div>
+          <div class="type-row">
+            <div class="type-c">object</div>
+            <div class="type-c bits">heap</div>
+            <div class="type-c">class instance</div>
+          </div>
+          <div class="type-row">
+            <div class="type-c">array</div>
+            <div class="type-c bits">heap</div>
+            <div class="type-c">dynamic typed array</div>
+          </div>
+        </div>
+        <div class="note">All heap-allocated types are managed by the garbage collector and subject to mark-and-sweep collection.</div>
+      </div>
+    </div>
+
+    <!-- Row 1 -->
+    <div class="quad" data-col="0" data-row="1">
+      <div class="quad-fig">fig. 0.1 — stack operations</div>
+      <div class="quad-sec">§ 4</div>
+      <div class="qi">
+        <div class="tag">opcodes — stack</div>
+        <div class="cell-title">stack ops</div>
+        <div class="cell-sub">push · pop · dup · swap</div>
+        <div class="op-table">
+          <div class="op-head">
+            <div class="op-h">opcode</div>
+            <div class="op-h">stack effect</div>
+            <div class="op-h">description</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">PUSH_NULL</div>
+            <div class="op-c stack">→ nil</div>
+            <div class="op-c">push nil onto stack</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">PUSH_TRUE</div>
+            <div class="op-c stack">→ true</div>
+            <div class="op-c">push boolean true</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">PUSH_FALSE</div>
+            <div class="op-c stack">→ false</div>
+            <div class="op-c">push boolean false</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">PUSH_INT</div>
+            <div class="op-c stack">→ int</div>
+            <div class="op-c">push 64-bit int literal</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">PUSH_FLOAT</div>
+            <div class="op-c stack">→ float</div>
+            <div class="op-c">push 64-bit float literal</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">PUSH_STR</div>
+            <div class="op-c stack">→ string</div>
+            <div class="op-c">push string from constant pool</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">POP</div>
+            <div class="op-c stack">a →</div>
+            <div class="op-c">discard top of stack</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">DUP</div>
+            <div class="op-c stack">a → a, a</div>
+            <div class="op-c">duplicate top value</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">DUP2</div>
+            <div class="op-c stack">a,b → a,b,a,b</div>
+            <div class="op-c">duplicate top two values</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">SWAP</div>
+            <div class="op-c stack">a,b → b,a</div>
+            <div class="op-c">swap top two values</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quad" data-col="1" data-row="1">
+      <div class="quad-fig">fig. 1.1 — arithmetic ops</div>
+      <div class="quad-sec">§ 5</div>
+      <div class="qi">
+        <div class="tag">opcodes — arithmetic</div>
+        <div class="cell-title">arithmetic</div>
+        <div class="cell-sub">int & float operations</div>
+        <div class="op-table">
+          <div class="op-head">
+            <div class="op-h">opcode</div>
+            <div class="op-h">stack effect</div>
+            <div class="op-h">description</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">ADD</div>
+            <div class="op-c stack">a, b → a+b</div>
+            <div class="op-c">integer addition</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">SUB</div>
+            <div class="op-c stack">a, b → a-b</div>
+            <div class="op-c">integer subtraction</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">MUL</div>
+            <div class="op-c stack">a, b → a*b</div>
+            <div class="op-c">integer multiplication</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">DIV</div>
+            <div class="op-c stack">a, b → a/b</div>
+            <div class="op-c">integer division (truncating)</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">MOD</div>
+            <div class="op-c stack">a, b → a%b</div>
+            <div class="op-c">integer modulo</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">NEG</div>
+            <div class="op-c stack">a → -a</div>
+            <div class="op-c">integer negation</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">FADD</div>
+            <div class="op-c stack">a, b → a+b</div>
+            <div class="op-c">float addition</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">FSUB</div>
+            <div class="op-c stack">a, b → a-b</div>
+            <div class="op-c">float subtraction</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">FMUL</div>
+            <div class="op-c stack">a, b → a*b</div>
+            <div class="op-c">float multiplication</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">FDIV</div>
+            <div class="op-c stack">a, b → a/b</div>
+            <div class="op-c">IEEE 754 division</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quad" data-col="2" data-row="1">
+      <div class="quad-fig">fig. 2.1 — comparison ops</div>
+      <div class="quad-sec">§ 6</div>
+      <div class="qi">
+        <div class="tag">opcodes — comparison</div>
+        <div class="cell-title">comparison</div>
+        <div class="cell-sub">all return bool</div>
+        <div class="op-table">
+          <div class="op-head">
+            <div class="op-h">opcode</div>
+            <div class="op-h">stack effect</div>
+            <div class="op-h">description</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">EQ</div>
+            <div class="op-c stack">a, b → bool</div>
+            <div class="op-c">equality (==)</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">NEQ</div>
+            <div class="op-c stack">a, b → bool</div>
+            <div class="op-c">inequality (!=)</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">LT</div>
+            <div class="op-c stack">a, b → bool</div>
+            <div class="op-c">less than (&lt;)</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">GT</div>
+            <div class="op-c stack">a, b → bool</div>
+            <div class="op-c">greater than (&gt;)</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">LTE</div>
+            <div class="op-c stack">a, b → bool</div>
+            <div class="op-c">less than or equal (≤)</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">GTE</div>
+            <div class="op-c stack">a, b → bool</div>
+            <div class="op-c">greater than or equal (≥)</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">IS_NIL</div>
+            <div class="op-c stack">a → bool</div>
+            <div class="op-c">true if value is nil</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">IS_TYPE</div>
+            <div class="op-c stack">a → bool</div>
+            <div class="op-c">type check (operand: type tag)</div>
+          </div>
+        </div>
+        <div class="note">EQ on heap types compares by reference, not value. Use the .equals() method for structural equality.</div>
+      </div>
+    </div>
+
+    <div class="quad" data-col="3" data-row="1">
+      <div class="quad-fig">fig. 3.1 — bitwise ops</div>
+      <div class="quad-sec">§ 7</div>
+      <div class="qi">
+        <div class="tag">opcodes — bitwise</div>
+        <div class="cell-title">bitwise</div>
+        <div class="cell-sub">int operands only</div>
+        <div class="op-table">
+          <div class="op-head">
+            <div class="op-h">opcode</div>
+            <div class="op-h">stack effect</div>
+            <div class="op-h">description</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">BAND</div>
+            <div class="op-c stack">a, b → int</div>
+            <div class="op-c">bitwise AND</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">BOR</div>
+            <div class="op-c stack">a, b → int</div>
+            <div class="op-c">bitwise OR</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">BXOR</div>
+            <div class="op-c stack">a, b → int</div>
+            <div class="op-c">bitwise XOR</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">BNOT</div>
+            <div class="op-c stack">a → int</div>
+            <div class="op-c">bitwise NOT (one's complement)</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">BSHL</div>
+            <div class="op-c stack">a, n → int</div>
+            <div class="op-c">left shift by n bits</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">BSHR</div>
+            <div class="op-c stack">a, n → int</div>
+            <div class="op-c">arithmetic right shift</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">BSHRU</div>
+            <div class="op-c stack">a, n → int</div>
+            <div class="op-c">logical right shift (unsigned)</div>
+          </div>
+        </div>
+        <div class="note">All bitwise ops require int operands. Applying them to other types raises a TypeError at runtime.</div>
+      </div>
+    </div>
+
+    <!-- Row 2 -->
+    <div class="quad" data-col="0" data-row="2">
+      <div class="quad-fig">fig. 0.2 — flow control</div>
+      <div class="quad-sec">§ 8</div>
+      <div class="qi">
+        <div class="tag">opcodes — control</div>
+        <div class="cell-title">flow control</div>
+        <div class="cell-sub">jumps & branches</div>
+        <div class="op-table">
+          <div class="op-head">
+            <div class="op-h">opcode</div>
+            <div class="op-h">stack effect</div>
+            <div class="op-h">description</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">JMP</div>
+            <div class="op-c stack">→</div>
+            <div class="op-c">unconditional jump (operand: offset)</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">JMPT</div>
+            <div class="op-c stack">cond →</div>
+            <div class="op-c">jump if top is truthy</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">JMPF</div>
+            <div class="op-c stack">cond →</div>
+            <div class="op-c">jump if top is falsy</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">JMPT_K</div>
+            <div class="op-c stack">cond</div>
+            <div class="op-c">jump-if-true, keep value on stack</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">JMPF_K</div>
+            <div class="op-c stack">cond</div>
+            <div class="op-c">jump-if-false, keep value on stack</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">LOOP</div>
+            <div class="op-c stack">→</div>
+            <div class="op-c">backward jump (operand: -offset)</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">NOP</div>
+            <div class="op-c stack">→</div>
+            <div class="op-c">no operation (padding)</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">HALT</div>
+            <div class="op-c stack">→</div>
+            <div class="op-c">stop execution, exit cleanly</div>
+          </div>
+        </div>
+        <div class="note">Jump offsets are signed 16-bit integers relative to the instruction after the jump.</div>
+      </div>
+    </div>
+
+    <div class="quad" data-col="1" data-row="2">
+      <div class="quad-fig">fig. 1.2 — call & return</div>
+      <div class="quad-sec">§ 9</div>
+      <div class="qi">
+        <div class="tag">opcodes — calls</div>
+        <div class="cell-title">call / return</div>
+        <div class="cell-sub">functions & closures</div>
+        <div class="op-table">
+          <div class="op-head">
+            <div class="op-h">opcode</div>
+            <div class="op-h">stack effect</div>
+            <div class="op-h">description</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">CALL</div>
+            <div class="op-c stack">fn, args… → ret</div>
+            <div class="op-c">call function, push return value</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">CALL_VOID</div>
+            <div class="op-c stack">fn, args… →</div>
+            <div class="op-c">call function, discard return</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">CALL_METHOD</div>
+            <div class="op-c stack">obj, args… → ret</div>
+            <div class="op-c">call method by name operand</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">TAILCALL</div>
+            <div class="op-c stack">fn, args… →</div>
+            <div class="op-c">tail-call optimised call</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">RET</div>
+            <div class="op-c stack">val →</div>
+            <div class="op-c">return value to caller</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">RET_VOID</div>
+            <div class="op-c stack">→</div>
+            <div class="op-c">return nil to caller</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">LOAD_CLOSURE</div>
+            <div class="op-c stack">→ fn</div>
+            <div class="op-c">push closure object onto stack</div>
+          </div>
+        </div>
+        <div class="note">TAILCALL reuses the current frame, enabling proper tail-call optimisation for recursive functions.</div>
+      </div>
+    </div>
+
+    <div class="quad" data-col="2" data-row="2">
+      <div class="quad-fig">fig. 2.2 — variables</div>
+      <div class="quad-sec">§ 10</div>
+      <div class="qi">
+        <div class="tag">opcodes — variables</div>
+        <div class="cell-title">variables</div>
+        <div class="cell-sub">locals · globals · upvalues</div>
+        <div class="op-table">
+          <div class="op-head">
+            <div class="op-h">opcode</div>
+            <div class="op-h">stack effect</div>
+            <div class="op-h">description</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">LOAD_LOCAL</div>
+            <div class="op-c stack">→ val</div>
+            <div class="op-c">push local[i] (operand: index)</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">STORE_LOCAL</div>
+            <div class="op-c stack">val →</div>
+            <div class="op-c">pop into local[i]</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">LOAD_GLOBAL</div>
+            <div class="op-c stack">→ val</div>
+            <div class="op-c">push global by name operand</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">STORE_GLOBAL</div>
+            <div class="op-c stack">val →</div>
+            <div class="op-c">pop into global by name</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">LOAD_UPVAL</div>
+            <div class="op-c stack">→ val</div>
+            <div class="op-c">push captured upvalue[i]</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">STORE_UPVAL</div>
+            <div class="op-c stack">val →</div>
+            <div class="op-c">pop into upvalue[i]</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">CLOSE_UPVAL</div>
+            <div class="op-c stack">→</div>
+            <div class="op-c">close open upvalue to heap</div>
+          </div>
+        </div>
+        <div class="note">Locals are index-addressed within the current call frame. Upvalues are heap-allocated cells shared by closures.</div>
+      </div>
+    </div>
+
+    <div class="quad" data-col="3" data-row="2">
+      <div class="quad-fig">fig. 3.2 — objects & arrays</div>
+      <div class="quad-sec">§ 11</div>
+      <div class="qi">
+        <div class="tag">opcodes — heap</div>
+        <div class="cell-title">objects & arrays</div>
+        <div class="cell-sub">heap allocation & access</div>
+        <div class="op-table">
+          <div class="op-head">
+            <div class="op-h">opcode</div>
+            <div class="op-h">stack effect</div>
+            <div class="op-h">description</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">NEW</div>
+            <div class="op-c stack">→ obj</div>
+            <div class="op-c">allocate new instance of class</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">GET_PROP</div>
+            <div class="op-c stack">obj → val</div>
+            <div class="op-c">get property by name operand</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">SET_PROP</div>
+            <div class="op-c stack">obj, val →</div>
+            <div class="op-c">set property by name operand</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">INSTANCEOF</div>
+            <div class="op-c stack">obj → bool</div>
+            <div class="op-c">check class hierarchy</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">NEW_ARRAY</div>
+            <div class="op-c stack">→ arr</div>
+            <div class="op-c">allocate empty array</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">GET_IDX</div>
+            <div class="op-c stack">arr, i → val</div>
+            <div class="op-c">get element at index</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">SET_IDX</div>
+            <div class="op-c stack">arr, i, val →</div>
+            <div class="op-c">set element at index</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">ARRAY_LEN</div>
+            <div class="op-c stack">arr → int</div>
+            <div class="op-c">push length of array</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">ARRAY_PUSH</div>
+            <div class="op-c stack">arr, val →</div>
+            <div class="op-c">append value to array</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 3 -->
+    <div class="quad" data-col="0" data-row="3">
+      <div class="quad-fig">fig. 0.3 — garbage collector</div>
+      <div class="quad-sec">§ 12</div>
+      <div class="qi">
+        <div class="tag">memory management</div>
+        <div class="cell-title">garbage collector</div>
+        <div class="cell-sub">mark-and-sweep · tri-color</div>
+        <div class="cell-body">A tri-color mark-and-sweep GC. All heap-allocated values (strings, objects, arrays, closures) are tracked. The GC runs automatically when heap pressure exceeds a threshold.</div>
+        <div class="kv-list">
+          <div class="kv-row">
+            <div class="kv-k">algorithm</div>
+            <div class="kv-v">tri-color mark-and-sweep</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">trigger</div>
+            <div class="kv-v">heap size > threshold (default 1 MB)</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">roots</div>
+            <div class="kv-v">operand stack, globals, open upvalues</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">cycles</div>
+            <div class="kv-v">handled (back-references traced)</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">growth factor</div>
+            <div class="kv-v">2× after each full collection</div>
+          </div>
+        </div>
+        <div class="note">The GC is stop-the-world. Concurrent collection is planned for a future revision.</div>
+      </div>
+    </div>
+
+    <div class="quad" data-col="1" data-row="3">
+      <div class="quad-fig">fig. 1.3 — module system</div>
+      <div class="quad-sec">§ 13</div>
+      <div class="qi">
+        <div class="tag">modules</div>
+        <div class="cell-title">module system</div>
+        <div class="cell-sub">import · export · namespaces</div>
+        <div class="cell-body">Modules are individual .cvm files. Each module has its own global namespace. Imports are resolved at load time; circular imports are detected and raise a LoadError.</div>
+        <div class="op-table">
+          <div class="op-head">
+            <div class="op-h">opcode</div>
+            <div class="op-h">stack effect</div>
+            <div class="op-h">description</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">IMPORT</div>
+            <div class="op-c stack">→ module</div>
+            <div class="op-c">load module by path operand</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">IMPORT_FROM</div>
+            <div class="op-c stack">module → val</div>
+            <div class="op-c">get exported name from module</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">EXPORT</div>
+            <div class="op-c stack">val →</div>
+            <div class="op-c">export name from current module</div>
+          </div>
+        </div>
+        <div class="kv-list">
+          <div class="kv-row">
+            <div class="kv-k">resolution</div>
+            <div class="kv-v">filesystem-relative, then stdlib path</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">caching</div>
+            <div class="kv-v">modules cached after first load</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">format</div>
+            <div class="kv-v">.cvm bytecode files</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quad" data-col="2" data-row="3">
+      <div class="quad-fig">fig. 2.3 — ffi & extensions</div>
+      <div class="quad-sec">§ 14</div>
+      <div class="qi">
+        <div class="tag">native extensions</div>
+        <div class="cell-title">FFI / DynCall</div>
+        <div class="cell-sub">calling native code</div>
+        <div class="cell-body">crono-vm exposes a C API for embedding and extension. Native functions are registered with a type signature and called via DynCall, which handles ABI-level dispatch without custom stubs.</div>
+        <div class="kv-list">
+          <div class="kv-row">
+            <div class="kv-k">mechanism</div>
+            <div class="kv-v">DynCall (libdyncall)</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">signature</div>
+            <div class="kv-v">type string, e.g. "ii)i" (int,int→int)</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">calling conv</div>
+            <div class="kv-v">platform default (cdecl / sysv amd64)</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">registration</div>
+            <div class="kv-v">crono_register_native(vm, name, fn, sig)</div>
+          </div>
+        </div>
+        <div class="code">// register a native function in C
+crono_register_native(vm, "math.sqrt", (void*)sqrt, "d)d"
+  // double → double
+);</div>
+      </div>
+    </div>
+
+    <div class="quad" data-col="3" data-row="3">
+      <div class="quad-fig">fig. 3.3 — error model</div>
+      <div class="quad-sec">§ 15</div>
+      <div class="qi">
+        <div class="tag">runtime errors</div>
+        <div class="cell-title">error model</div>
+        <div class="cell-sub">throw · catch · unwind</div>
+        <div class="cell-body">Errors are first-class values. Any value can be thrown. The VM unwinds the call stack until a matching catch handler is found, or terminates with an uncaught error.</div>
+        <div class="op-table">
+          <div class="op-head">
+            <div class="op-h">opcode</div>
+            <div class="op-h">stack effect</div>
+            <div class="op-h">description</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">THROW</div>
+            <div class="op-c stack">err →</div>
+            <div class="op-c">throw value as error</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">TRY_BEGIN</div>
+            <div class="op-c stack">→</div>
+            <div class="op-c">push exception handler (operand: handler offset)</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">TRY_END</div>
+            <div class="op-c stack">→</div>
+            <div class="op-c">pop exception handler (no error)</div>
+          </div>
+          <div class="op-row">
+            <div class="op-c">CATCH</div>
+            <div class="op-c stack">→ err</div>
+            <div class="op-c">enter catch block, push caught error</div>
+          </div>
+        </div>
+        <div class="kv-list">
+          <div class="kv-row">
+            <div class="kv-k">built-in errors</div>
+            <div class="kv-v">TypeError · IndexError · LoadError</div>
+          </div>
+          <div class="kv-row">
+            <div class="kv-k">stack trace</div>
+            <div class="kv-v">attached to error object</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 4 -->
+    <div class="quad" data-col="0" data-row="4">
+      <div class="quad-fig">fig. 0.4 — quick start</div>
+      <div class="quad-sec">§ 16</div>
+      <div class="qi">
+        <div class="tag">getting started</div>
+        <div class="cell-title">quick start</div>
+        <div class="cell-sub"></div>
+        <div class="code"># build from source
+git clone https://github.com/racso/crono-lang
+cd crono-lang/crono-vm && make
+
+# compile a .cs file to bytecode
+cronoc hello.cs -o hello.cvm
+
+# run the bytecode
+crono hello.cvm
+
+# inspect disassembly
+crono --disasm hello.cvm
+
+# run with GC debug output
+crono --gc-debug hello.cvm</div>
+        <a href="#" class="btn">→ installation guide</a>
+      </div>
+    </div>
+
+    <div class="quad" data-col="1" data-row="4">
+      <div class="quad-fig">fig. 1.4 — example: hello world</div>
+      <div class="quad-sec">§ 17</div>
+      <div class="qi">
+        <div class="tag">example</div>
+        <div class="cell-title">hello, world</div>
+        <div class="cell-sub"></div>
+        <div class="code">// hello.cs — crono-sharp source
+print("hello, world");</div>
+        <div class="code">; compiled bytecode (disassembly)
+PUSH_STR "hello, world"
+CALL print, 1
+POP
+HALT</div>
+        <div class="cell-body">The compiler emits PUSH_STR to load the string constant, CALL to invoke the built-in print function, POP to discard the return value, then HALT.</div>
+      </div>
+    </div>
+
+    <div class="quad" data-col="2" data-row="4">
+      <div class="quad-fig">fig. 2.4 — example: fibonacci</div>
+      <div class="quad-sec">§ 18</div>
+      <div class="qi">
+        <div class="tag">example — recursion</div>
+        <div class="cell-title">fibonacci</div>
+        <div class="cell-sub"></div>
+        <div class="code">// fibonacci.cs
+int fib(int n) {
+  if (n <= 1) return n;
+  return fib(n - 1) + fib(n - 2);
+}
+print(fib(10));</div>
+        <div class="code">; key bytecode (inner loop)
+LOAD_LOCAL 0    ; n
+PUSH_INT 1
+LTE
+JMPF +3
+LOAD_LOCAL 0
+RET
+LOAD_LOCAL 0
+PUSH_INT 1
+SUB
+CALL fib, 1
+LOAD_LOCAL 0
+PUSH_INT 2
+SUB
+CALL fib, 1
+ADD
+RET</div>
+      </div>
+    </div>
+
+    <div class="quad" data-col="3" data-row="4">
+      <div class="quad-fig">fig. 3.4 — example: native extension</div>
+      <div class="quad-sec">§ 19</div>
+      <div class="qi">
+        <div class="tag">example — ffi</div>
+        <div class="cell-title">native extension</div>
+        <div class="cell-sub"></div>
+        <div class="code">// embed crono-vm in C
+#include "crono.h"
+int main() {
+  CronoVM *vm = crono_new();
+  // register native sqrt
+  crono_register_native(vm, "math.sqrt", sqrt, "d)d"
+  );
+  // load and run bytecode
+  crono_load_file(vm, "prog.cvm");
+  crono_run(vm);
+  crono_free(vm);
+}</div>
+        <div class="cell-body">See § 14 (FFI / DynCall) for signature syntax and the full C API reference.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const COLS = 4, ROWS = 5;
+const PC_MAX = 720; // multiple of 40 → grid aligned on desktop (≈ HD)
+const MOBILE_BREAK = 768;
+
+// Find (pw, ph) grid pitches that produce the most square grid cells possible.
+// For each dw in [8..12], derive dh naturally as round(qh / pw) so ph ≈ pw.
+// Quads fill screen exactly: qw = dw×pw = vw, qh = dh×ph = qh (by construction).
+function computeGridPitches(vw, qh) {
+  let best = null, bestDiff = Infinity;
+  for (let dw = 8; dw <= 12; dw++) {
+    const pw = vw / dw;
+    const dh = Math.max(1, Math.round(qh / pw)); // natural pairing
+    const ph = qh / dh;
+    const diff = Math.abs(pw - ph);
+    if (diff < bestDiff) {
+      bestDiff = diff;
+      best = { pw, ph };
+    }
+  }
+  return best;
+}
+
+function quadDims() {
+  const vw = window.innerWidth, vh = window.innerHeight - 48;
+  if (vw < MOBILE_BREAK) {
+    const { pw, ph } = computeGridPitches(vw, vh);
+    return { qw: vw, qh: vh, pw, ph };
+  } else {
+    const qs = Math.max(80, Math.min(PC_MAX, Math.round(vh / 40) * 40));
+    return { qw: qs, qh: qs, pw: 40, ph: 40 };
+  }
+}
+
+const wrap = document.getElementById('wrap');
+const canvas = document.getElementById('canvas');
+const frame = document.querySelector('.frame');
+
+function setup() {
+  const { qw, qh, pw, ph } = quadDims();
+
+  canvas.style.width = (qw * COLS + pw * 2) + 'px';
+  canvas.style.height = (qh * ROWS + ph * 2) + 'px';
+  canvas.style.backgroundSize = `${pw}px ${ph}px`;
+
+  frame.style.top = ph + 'px';
+  frame.style.bottom = ph + 'px';
+  frame.style.left = pw + 'px';
+  frame.style.right = pw + 'px';
+
+  document.querySelectorAll('.quad').forEach(q => {
+    const c = +q.dataset.col, r = +q.dataset.row;
+    q.style.width = qw + 'px';
+    q.style.height = qh + 'px';
+    q.style.left = (pw + c * qw) + 'px';
+    q.style.top = (ph + r * qh) + 'px';
+    q.style.setProperty('--qw', qw + 'px');
+    q.style.setProperty('--qh', qh + 'px');
+    q.style.setProperty('--pw', pw + 'px');
+    q.style.setProperty('--ph', ph + 'px');
+  });
+}
+
+setup();
+window.addEventListener('resize', () => {
+  setup();
+  updateActive();
+});
+
+function snapTo(col, row) {
+  const { qw, qh, pw, ph } = quadDims();
+  wrap.scrollTo({
+    left: col === 0 ? 0 : pw + col * qw,
+    top: row === 0 ? 0 : ph + row * qh,
+    behavior: 'smooth'
+  });
+}
+
+function updateActive() {
+  const { qw, qh, pw, ph } = quadDims();
+  const cc = Math.max(0, Math.min(COLS-1, Math.round((wrap.scrollLeft - pw/2) / qw)));
+  const rr = Math.max(0, Math.min(ROWS-1, Math.round((wrap.scrollTop - ph/2) / qh)));
+}
+
+wrap.addEventListener('scroll', updateActive, { passive: true });
+updateActive();
+
+let panning = false, sx, sy, sl, st;
+wrap.addEventListener('mousedown', e => {
+  if (e.target.closest('a, button')) return;
+  panning = true;
+  sx = e.clientX;
+  sy = e.clientY;
+  sl = wrap.scrollLeft;
+  st = wrap.scrollTop;
+  wrap.classList.add('panning');
+  e.preventDefault();
+});
+
+window.addEventListener('mousemove', e => {
+  if (!panning) return;
+  wrap.scrollLeft = sl - (e.clientX - sx);
+  wrap.scrollTop = st - (e.clientY - sy);
+});
+
+window.addEventListener('mouseup', () => {
+  panning = false;
+  wrap.classList.remove('panning');
+});
+
+document.addEventListener('keydown', e => {
+  const { qw, qh, pw, ph } = quadDims();
+  const cc = Math.max(0, Math.min(COLS-1, Math.round((wrap.scrollLeft - pw/2) / qw)));
+  const rr = Math.max(0, Math.min(ROWS-1, Math.round((wrap.scrollTop - ph/2) / qh)));
+  const m = {
+    ArrowRight: [cc+1, rr],
+    ArrowLeft: [cc-1, rr],
+    ArrowDown: [cc, rr+1],
+    ArrowUp: [cc, rr-1]
+  };
+  if (m[e.key]) {
+    const [nc, nr] = m[e.key];
+    if (nc >= 0 && nc < COLS && nr >= 0 && nr < ROWS) {
+      snapTo(nc, nr);
+      e.preventDefault();
+    }
+  }
+});
+</script>
 
 </body>
 </html>
