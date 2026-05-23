@@ -44,7 +44,7 @@ html, body {
   border-bottom: 1px solid var(--n3);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   z-index: 200;
   flex-shrink: 0;
 }
@@ -632,7 +632,14 @@ html, body {
 <div id="wrap" class="wrap">
 <nav class="nav">
   <a href="/" class="nav-logo">
-    <span class="accent">crono</span>-lang
+    <svg width="15" height="20" viewBox="-2 -2 24 24" preserveAspectRatio="none" aria-hidden="true">
+      <g transform="rotate(-45,10,10)">
+        <rect x="2"  y="2"  width="8" height="8" fill="#c07848"/>
+        <rect x="2"  y="10" width="8" height="8" fill="#fefdfa"/>
+        <rect x="10" y="10" width="8" height="8" fill="#c07848"/>
+      </g>
+    </svg>
+    crono<span class="accent">-lang</span>
   </a>
   <div class="nav-section">crono-vm — technical reference</div>
 </nav>
