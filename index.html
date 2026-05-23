@@ -1916,7 +1916,7 @@ function updateActive() {
   const cc = Math.max(0, Math.min(COLS-1, Math.round((wrap.scrollLeft - pw/2) / qw)));
   const rr = Math.max(0, Math.min(ROWS-1, Math.round((wrap.scrollTop - ph/2) / qh)));
   const hideY = Math.min(wrap.scrollTop, NAV_H);
-  nav.style.transform = `translateY(${-hideY}px) translateX(${wrap.scrollLeft}px)`;
+  nav.style.transform = `translateY(${-hideY}px)`;
   wrap.style.top = (NAV_H - hideY) + 'px';
 }
 
