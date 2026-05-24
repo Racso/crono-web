@@ -495,7 +495,7 @@ html, body {
 }
 
 .mm-num {
-  font-size: 7px;
+  font-size: 7.5px;
   color: var(--crono);
   letter-spacing: 0.05em;
   line-height: 1;
@@ -503,7 +503,7 @@ html, body {
 }
 
 .mm-label {
-  font-size: 6px;
+  font-size: 6.5px;
   color: var(--n4);
   white-space: normal;
   line-height: 1.3;
