@@ -284,7 +284,887 @@ String.Join(arr, sep)
 String.Format(template, ...)</div>
     </crono-quad>
 
-    <!-- cols 2–7: empty (content TBD) ─────────────────────────────────── -->
+    <!-- ════════════════════════════════ COL 2 — Control Flow ══════════ -->
+
+    <crono-quad col="2" row="0" fig="fig. 2.0 — conditionals" sec="§2">
+      <div class="tag">control flow</div>
+      <div class="cell-title">conditionals</div>
+      <div class="cell-sub">if · else if · else</div>
+      <div class="code"><span class="kw">if</span> (x > <span class="num">0</span>) {
+    print(<span class="st">"positive"</span>);
+} <span class="kw">else if</span> (x == <span class="num">0</span>) {
+    print(<span class="st">"zero"</span>);
+} <span class="kw">else</span> {
+    print(<span class="st">"negative"</span>);
+}
+
+<span class="cm">// condition must be bool</span>
+<span class="kw">bool</span> ok = check();
+<span class="kw">if</span> (!ok) { <span class="kw">return</span>; }
+
+<span class="cm">// nil check on nullable</span>
+<span class="kw">string</span>? name = getName();
+<span class="kw">if</span> (name != <span class="kw">nil</span>) {
+    print(name);
+}</div>
+      <div class="note">No switch/case, no ternary operator. Condition expressions must evaluate to bool — no implicit truthiness.</div>
+    </crono-quad>
+
+    <crono-quad col="2" row="1" fig="fig. 2.1 — loops" sec="§2">
+      <div class="tag">control flow</div>
+      <div class="cell-title">loops</div>
+      <div class="cell-sub">for · while · foreach · break · continue</div>
+      <div class="code"><span class="cm">// classic for</span>
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i < <span class="num">10</span>; i++) {
+    <span class="kw">if</span> (i == <span class="num">5</span>) <span class="kw">continue</span>;
+    <span class="kw">if</span> (i == <span class="num">8</span>) <span class="kw">break</span>;
+    print(i);
+}
+
+<span class="cm">// while</span>
+<span class="kw">while</span> (queue.Count() > <span class="num">0</span>) {
+    process(queue.Get(<span class="num">0</span>));
+    queue.Remove(<span class="num">0</span>);
+}
+
+<span class="cm">// foreach — arrays and IEnumerable</span>
+<span class="kw">foreach</span> (<span class="kw">string</span> item <span class="kw">in</span> names) {
+    print(item);
+}
+<span class="kw">foreach</span> (<span class="kw">int</span> n <span class="kw">in</span> nums) {
+    total = total + n;
+}</div>
+    </crono-quad>
+
+    <crono-quad col="2" row="2" fig="fig. 2.2 — functions" sec="§2">
+      <div class="tag">functions</div>
+      <div class="cell-title">functions</div>
+      <div class="cell-sub">typed params · return types · void</div>
+      <div class="code"><span class="cm">// typed return</span>
+<span class="kw">int</span> add(<span class="kw">int</span> a, <span class="kw">int</span> b) {
+    <span class="kw">return</span> a + b;
+}
+
+<span class="cm">// void</span>
+<span class="kw">void</span> log(<span class="kw">string</span> msg) {
+    print(<span class="st">"[LOG] "</span> + msg);
+}
+
+<span class="cm">// variadic params</span>
+<span class="kw">string</span> fmt(<span class="kw">string</span> tpl, <span class="kw">params dynamic</span>... args) {
+    <span class="kw">return</span> String.Format(tpl, args);
+}
+
+<span class="cm">// nullable return</span>
+<span class="kw">string</span>? find(<span class="kw">string</span>[] list, <span class="kw">string</span> key) {
+    <span class="kw">foreach</span> (<span class="kw">string</span> s <span class="kw">in</span> list) {
+        <span class="kw">if</span> (s == key) <span class="kw">return</span> s;
+    }
+    <span class="kw">return</span> <span class="kw">nil</span>;
+}</div>
+    </crono-quad>
+
+    <crono-quad col="2" row="3" fig="fig. 2.3 — generics" sec="§2">
+      <div class="tag">functions</div>
+      <div class="cell-title">generic functions</div>
+      <div class="cell-sub">T inferred at call site · monomorphic</div>
+      <div class="code"><span class="cm">// T inferred from argument</span>
+T identity&lt;T&gt;(T x) {
+    <span class="kw">return</span> x;
+}
+<span class="kw">int</span> n = identity(<span class="num">42</span>);       <span class="cm">// T = int</span>
+<span class="kw">string</span> s = identity(<span class="st">"hi"</span>);  <span class="cm">// T = string</span>
+
+<span class="cm">// generic + collections</span>
+List&lt;T&gt; wrap&lt;T&gt;(T item) {
+    List&lt;T&gt; l = List.New&lt;T&gt;();
+    l.Add(item);
+    <span class="kw">return</span> l;
+}
+
+<span class="cm">// multiple type params</span>
+Dict&lt;V&gt; pair&lt;V&gt;(<span class="kw">string</span> k, V v) {
+    Dict&lt;V&gt; d = Dict.New&lt;V&gt;();
+    d.Set(k, v);
+    <span class="kw">return</span> d;
+}</div>
+      <div class="note">Generics are monomorphic — no constraint system (no where T : IFoo). Type is inferred at each call site.</div>
+    </crono-quad>
+
+    <crono-quad col="2" row="4" fig="fig. 2.4 — generators" sec="§2">
+      <div class="tag">async</div>
+      <div class="cell-title">generators</div>
+      <div class="cell-sub">yield · state machine · suspend &amp; resume</div>
+      <div class="code"><span class="cm">// yield suspends execution</span>
+<span class="kw">void</span> counter(<span class="kw">int</span> max) {
+    <span class="kw">int</span> i = <span class="num">0</span>;
+    <span class="kw">while</span> (i < max) {
+        <span class="kw">yield</span>;        <span class="cm">// suspend here</span>
+        print(i);
+        i++;
+    }
+}
+
+<span class="cm">// run via orbit — returns Channel&lt;void&gt;</span>
+Channel&lt;<span class="kw">void</span>&gt; ch = <span class="kw">orbit</span> counter(<span class="num">5</span>);
+ch.wait();            <span class="cm">// drives to completion</span></div>
+      <div class="kv-list">
+        <div class="kv-row"><div class="kv-k">yield</div><div class="kv-v">suspends function, saves locals to __state fields</div></div>
+        <div class="kv-row"><div class="kv-k">lowering</div><div class="kv-v">compiler transforms to state machine class</div></div>
+        <div class="kv-row"><div class="kv-k">orbit f()</div><div class="kv-v">spawns generator, returns Channel&lt;T&gt;</div></div>
+        <div class="kv-row"><div class="kv-k">ch.wait()</div><div class="kv-v">blocks until generator finishes</div></div>
+      </div>
+    </crono-quad>
+
+    <crono-quad col="2" row="5" fig="fig. 2.5 — example" sec="§2">
+      <div class="tag">example</div>
+      <div class="cell-title">flow example</div>
+      <div class="cell-sub">primes · loops · functions · generics</div>
+      <div class="code"><span class="kw">bool</span> isPrime(<span class="kw">int</span> n) {
+    <span class="kw">if</span> (n < <span class="num">2</span>) <span class="kw">return false</span>;
+    <span class="kw">int</span> i = <span class="num">2</span>;
+    <span class="kw">while</span> (i * i <= n) {
+        <span class="kw">if</span> (n % i == <span class="num">0</span>) <span class="kw">return false</span>;
+        i++;
+    }
+    <span class="kw">return true</span>;
+}
+
+List&lt;<span class="kw">int</span>&gt; firstN&lt;T&gt;(<span class="kw">int</span> count) {
+    List&lt;<span class="kw">int</span>&gt; primes = List.New&lt;<span class="kw">int</span>&gt;();
+    <span class="kw">int</span> n = <span class="num">2</span>;
+    <span class="kw">while</span> (primes.Count() < count) {
+        <span class="kw">if</span> (isPrime(n)) primes.Add(n);
+        n++;
+    }
+    <span class="kw">return</span> primes;
+}
+
+<span class="kw">foreach</span> (<span class="kw">int</span> p <span class="kw">in</span> firstN(<span class="num">10</span>)) {
+    print(p);
+}</div>
+    </crono-quad>
+
+    <!-- ════════════════════════════════ COL 3 — OOP ══════════════════════ -->
+
+    <crono-quad col="3" row="0" fig="fig. 3.0 — classes" sec="§3">
+      <div class="tag">oop</div>
+      <div class="cell-title">classes</div>
+      <div class="cell-sub">reference types · fields · methods · init</div>
+      <div class="code"><span class="kw">class</span> Animal {
+    <span class="kw">public string</span> name;
+    <span class="kw">public int</span>    age;
+
+    <span class="kw">void</span> init(<span class="kw">string</span> n, <span class="kw">int</span> a) {
+        <span class="kw">this</span>.name = n;
+        <span class="kw">this</span>.age  = a;
+    }
+
+    <span class="kw">string</span> describe() {
+        <span class="kw">return</span> <span class="st">"${this.name} (${this.age})"</span>;
+    }
+}
+
+Animal a = <span class="kw">new</span> Animal();
+a.init(<span class="st">"Rex"</span>, <span class="num">3</span>);
+print(a.describe());  <span class="cm">// → Rex (3)</span></div>
+      <div class="kv-list">
+        <div class="kv-row"><div class="kv-k">constructor</div><div class="kv-v">method named init() — call manually after new</div></div>
+        <div class="kv-row"><div class="kv-k">this</div><div class="kv-v">reference to current instance</div></div>
+        <div class="kv-row"><div class="kv-k">new</div><div class="kv-v">allocates on GC heap</div></div>
+      </div>
+    </crono-quad>
+
+    <crono-quad col="3" row="1" fig="fig. 3.1 — inheritance" sec="§3">
+      <div class="tag">oop</div>
+      <div class="cell-title">inheritance</div>
+      <div class="cell-sub">single · method override · virtual dispatch</div>
+      <div class="code"><span class="kw">class</span> Dog : Animal {
+    <span class="kw">public string</span> sound;
+
+    <span class="kw">void</span> init(<span class="kw">string</span> n) {
+        <span class="kw">this</span>.name  = n;
+        <span class="kw">this</span>.age   = <span class="num">0</span>;
+        <span class="kw">this</span>.sound = <span class="st">"Woof"</span>;
+    }
+
+    <span class="kw">string</span> describe() {  <span class="cm">// overrides Animal</span>
+        <span class="kw">return</span> <span class="st">"${this.name}: ${this.sound}"</span>;
+    }
+}
+
+Animal a = <span class="kw">new</span> Dog();
+a.init(<span class="st">"Rex"</span>);
+print(a.describe()); <span class="cm">// → Rex: Woof (virtual)</span></div>
+      <div class="kv-list">
+        <div class="kv-row"><div class="kv-k">syntax</div><div class="kv-v">class Child : Parent</div></div>
+        <div class="kv-row"><div class="kv-k">override</div><div class="kv-v">same method name and signature</div></div>
+        <div class="kv-row"><div class="kv-k">dispatch</div><div class="kv-v">virtual by default via vtable</div></div>
+        <div class="kv-row"><div class="kv-k">multiple</div><div class="kv-v">not supported — single parent only</div></div>
+        <div class="kv-row"><div class="kv-k">base call</div><div class="kv-v">not supported — call parent method directly</div></div>
+      </div>
+    </crono-quad>
+
+    <crono-quad col="3" row="2" fig="fig. 3.2 — interfaces" sec="§3">
+      <div class="tag">oop</div>
+      <div class="cell-title">interfaces</div>
+      <div class="cell-sub">method-only contracts · polymorphism · multiple</div>
+      <div class="code"><span class="kw">interface</span> IGreeter {
+    <span class="kw">string</span> Greet();
+}
+
+<span class="kw">interface</span> ISpeaker {
+    <span class="kw">void</span> Speak();
+}
+
+<span class="cm">// class + interface(s)</span>
+<span class="kw">class</span> Hello : Animal, IGreeter, ISpeaker {
+    <span class="kw">string</span> Greet() {
+        <span class="kw">return</span> <span class="st">"Hello, ${this.name}!"</span>;
+    }
+    <span class="kw">void</span> Speak() { print(<span class="kw">this</span>.Greet()); }
+}
+
+<span class="cm">// interface reference (polymorphism)</span>
+IGreeter g = <span class="kw">new</span> Hello();
+g.init(<span class="st">"world"</span>);
+print(g.Greet());</div>
+      <div class="note">Interfaces are method-only — no fields. A class may combine one parent and any number of interfaces: class Foo : Bar, IOne, ITwo.</div>
+    </crono-quad>
+
+    <crono-quad col="3" row="3" fig="fig. 3.3 — visibility" sec="§3">
+      <div class="tag">oop</div>
+      <div class="cell-title">visibility</div>
+      <div class="cell-sub">public · private · space</div>
+      <div class="code"><span class="kw">class</span> Account {
+    <span class="kw">private int</span>    balance;   <span class="cm">// class only</span>
+    <span class="kw">public string</span>  owner;     <span class="cm">// everywhere</span>
+    <span class="kw">space string</span>   tag;       <span class="cm">// same file</span>
+
+    <span class="kw">public void</span> deposit(<span class="kw">int</span> amount) {
+        <span class="kw">this</span>.balance = <span class="kw">this</span>.balance + amount;
+    }
+
+    <span class="kw">private bool</span> canWithdraw(<span class="kw">int</span> n) {
+        <span class="kw">return this</span>.balance >= n;
+    }
+}</div>
+      <div class="kv-list">
+        <div class="kv-row"><div class="kv-k">public</div><div class="kv-v">accessible from anywhere</div></div>
+        <div class="kv-row"><div class="kv-k">private</div><div class="kv-v">accessible within this class only (default)</div></div>
+        <div class="kv-row"><div class="kv-k">space</div><div class="kv-v">accessible within the same file/module</div></div>
+      </div>
+    </crono-quad>
+
+    <crono-quad col="3" row="4" fig="fig. 3.4 — static" sec="§3">
+      <div class="tag">oop</div>
+      <div class="cell-title">static</div>
+      <div class="cell-sub">class-level fields · methods · no this</div>
+      <div class="code"><span class="kw">class</span> Counter {
+    <span class="kw">private int</span>       count;
+    <span class="kw">public static int</span> instances;
+
+    <span class="kw">static</span> Counter Create() {
+        Counter c = <span class="kw">new</span> Counter();
+        Counter.instances = Counter.instances + <span class="num">1</span>;
+        <span class="kw">return</span> c;
+    }
+
+    <span class="kw">void</span> increment() {
+        <span class="kw">this</span>.count++;   <span class="cm">// this is valid here</span>
+    }
+}
+
+Counter.Create();
+print(Counter.instances);  <span class="cm">// → 1</span></div>
+      <div class="kv-list">
+        <div class="kv-row"><div class="kv-k">static field</div><div class="kv-v">shared across all instances</div></div>
+        <div class="kv-row"><div class="kv-k">static method</div><div class="kv-v">no this — called as ClassName.Method()</div></div>
+        <div class="kv-row"><div class="kv-k">access</div><div class="kv-v">ClassName.member — never instance.member</div></div>
+      </div>
+    </crono-quad>
+
+    <crono-quad col="3" row="5" fig="fig. 3.5 — oop example" sec="§3">
+      <div class="tag">example</div>
+      <div class="cell-title">OOP example</div>
+      <div class="cell-sub">inventory · classes · inheritance · interface</div>
+      <div class="code"><span class="kw">interface</span> IDescribable {
+    <span class="kw">string</span> Describe();
+}
+
+<span class="kw">class</span> Item : IDescribable {
+    <span class="kw">public string</span> name;
+    <span class="kw">public int</span>    qty;
+    <span class="kw">void</span> init(<span class="kw">string</span> n, <span class="kw">int</span> q) {
+        <span class="kw">this</span>.name = n; <span class="kw">this</span>.qty = q;
+    }
+    <span class="kw">string</span> Describe() {
+        <span class="kw">return</span> <span class="st">"${this.name} ×${this.qty}"</span>;
+    }
+}
+
+<span class="kw">class</span> Inventory {
+    <span class="kw">private</span> List&lt;Item&gt; items;
+    <span class="kw">void</span> init() { <span class="kw">this</span>.items = List.New&lt;Item&gt;(); }
+    <span class="kw">void</span> add(Item i) { <span class="kw">this</span>.items.Add(i); }
+    <span class="kw">void</span> print() {
+        <span class="kw">foreach</span> (Item i <span class="kw">in this</span>.items) {
+            print(i.Describe());
+        }
+    }
+}</div>
+    </crono-quad>
+
+    <!-- ════════════════════════════════ COL 4 — Collections ════════════ -->
+
+    <crono-quad col="4" row="0" fig="fig. 4.0 — generics" sec="§4">
+      <div class="tag">generics</div>
+      <div class="cell-title">generics</div>
+      <div class="cell-sub">T syntax · monomorphic · call-site inference</div>
+      <div class="cell-body">Generics in crono-sharp let functions and collections work across types without losing static type safety. The type parameter T is inferred at each call site from the argument types. No constraint system — T can be any type.</div>
+      <div class="code"><span class="cm">// generic type instantiation</span>
+List&lt;<span class="kw">int</span>&gt;    ints    = List.New&lt;<span class="kw">int</span>&gt;();
+List&lt;<span class="kw">string</span>&gt; strs    = List.New&lt;<span class="kw">string</span>&gt;();
+Dict&lt;<span class="kw">bool</span>&gt;   flags   = Dict.New&lt;<span class="kw">bool</span>&gt;();
+Set&lt;Animal&gt;  animals = Set.New&lt;Animal&gt;();
+
+<span class="cm">// generic function — T inferred</span>
+T first&lt;T&gt;(List&lt;T&gt; list) {
+    <span class="kw">return</span> list.Get(<span class="num">0</span>);
+}
+<span class="kw">int</span> n = first(ints);  <span class="cm">// T = int</span></div>
+    </crono-quad>
+
+    <crono-quad col="4" row="1" fig="fig. 4.1 — List" sec="§4">
+      <div class="tag">collections</div>
+      <div class="cell-title">List&lt;T&gt;</div>
+      <div class="cell-sub">resizable · ordered · generic</div>
+      <div class="code">List&lt;<span class="kw">int</span>&gt; l = List.New&lt;<span class="kw">int</span>&gt;();
+
+l.Add(<span class="num">10</span>);
+l.Add(<span class="num">20</span>);
+l.Add(<span class="num">30</span>);
+
+<span class="kw">int</span>  count = l.Count();       <span class="cm">// → 3</span>
+<span class="kw">int</span>  val   = l.Get(<span class="num">1</span>);        <span class="cm">// → 20</span>
+l.Set(<span class="num">1</span>, <span class="num">99</span>);                  <span class="cm">// [10, 99, 30]</span>
+l.Remove(<span class="num">0</span>);                  <span class="cm">// [99, 30]</span>
+
+<span class="cm">// With — returns new list with item appended</span>
+List&lt;<span class="kw">int</span>&gt; l2 = l.With(<span class="num">42</span>);
+
+<span class="cm">// iterate</span>
+<span class="kw">foreach</span> (<span class="kw">int</span> n <span class="kw">in</span> l) { print(n); }</div>
+      <div class="kv-list">
+        <div class="kv-row"><div class="kv-k">New&lt;T&gt;()</div><div class="kv-v">create empty list</div></div>
+        <div class="kv-row"><div class="kv-k">Add(v)</div><div class="kv-v">append to end</div></div>
+        <div class="kv-row"><div class="kv-k">Get(i)</div><div class="kv-v">element at index (0-based)</div></div>
+        <div class="kv-row"><div class="kv-k">Set(i,v)</div><div class="kv-v">replace element at index</div></div>
+        <div class="kv-row"><div class="kv-k">Remove(i)</div><div class="kv-v">remove element at index</div></div>
+        <div class="kv-row"><div class="kv-k">Count()</div><div class="kv-v">number of elements</div></div>
+      </div>
+    </crono-quad>
+
+    <crono-quad col="4" row="2" fig="fig. 4.2 — Dict" sec="§4">
+      <div class="tag">collections</div>
+      <div class="cell-title">Dict&lt;V&gt;</div>
+      <div class="cell-sub">string-keyed · generic value · hash map</div>
+      <div class="code">Dict&lt;<span class="kw">int</span>&gt; scores = Dict.New&lt;<span class="kw">int</span>&gt;();
+
+scores.Set(<span class="st">"alice"</span>, <span class="num">95</span>);
+scores.Set(<span class="st">"bob"</span>,   <span class="num">87</span>);
+
+<span class="kw">int</span>  s   = scores.Get(<span class="st">"alice"</span>);      <span class="cm">// → 95</span>
+<span class="kw">bool</span> has = scores.ContainsKey(<span class="st">"bob"</span>); <span class="cm">// → true</span>
+<span class="kw">int</span>  c   = scores.Count();             <span class="cm">// → 2</span>
+
+List&lt;<span class="kw">string</span>&gt; keys = scores.Keys();
+<span class="kw">foreach</span> (<span class="kw">string</span> k <span class="kw">in</span> keys) {
+    print(<span class="st">"${k}: ${scores.Get(k)}"</span>);
+}
+
+scores.Remove(<span class="st">"bob"</span>);</div>
+      <div class="kv-list">
+        <div class="kv-row"><div class="kv-k">key type</div><div class="kv-v">always string</div></div>
+        <div class="kv-row"><div class="kv-k">value type</div><div class="kv-v">generic V (any type)</div></div>
+        <div class="kv-row"><div class="kv-k">Keys()</div><div class="kv-v">returns List&lt;string&gt;</div></div>
+      </div>
+    </crono-quad>
+
+    <crono-quad col="4" row="3" fig="fig. 4.3 — Set" sec="§4">
+      <div class="tag">collections</div>
+      <div class="cell-title">Set&lt;T&gt;</div>
+      <div class="cell-sub">unordered · unique elements</div>
+      <div class="code">Set&lt;<span class="kw">string</span>&gt; seen = Set.New&lt;<span class="kw">string</span>&gt;();
+
+seen.Add(<span class="st">"alpha"</span>);
+seen.Add(<span class="st">"beta"</span>);
+seen.Add(<span class="st">"alpha"</span>);  <span class="cm">// ignored — already in set</span>
+
+<span class="kw">int</span>  c   = seen.Count();             <span class="cm">// → 2</span>
+<span class="kw">bool</span> has = seen.Contains(<span class="st">"beta"</span>);   <span class="cm">// → true</span>
+seen.Remove(<span class="st">"alpha"</span>);
+
+List&lt;<span class="kw">string</span>&gt; items = seen.ToList();</div>
+      <div class="kv-list">
+        <div class="kv-row"><div class="kv-k">New&lt;T&gt;()</div><div class="kv-v">create empty set</div></div>
+        <div class="kv-row"><div class="kv-k">Add(v)</div><div class="kv-v">insert; no-op if already present</div></div>
+        <div class="kv-row"><div class="kv-k">Contains(v)</div><div class="kv-v">membership test</div></div>
+        <div class="kv-row"><div class="kv-k">Remove(v)</div><div class="kv-v">delete element</div></div>
+        <div class="kv-row"><div class="kv-k">ToList()</div><div class="kv-v">convert to List&lt;T&gt;</div></div>
+        <div class="kv-row"><div class="kv-k">Count()</div><div class="kv-v">number of unique elements</div></div>
+      </div>
+    </crono-quad>
+
+    <crono-quad col="4" row="4" fig="fig. 4.4 — IEnumerable" sec="§4">
+      <div class="tag">collections</div>
+      <div class="cell-title">IEnumerable</div>
+      <div class="cell-sub">iterator protocol · foreach integration</div>
+      <div class="cell-body">IEnumerable&lt;T&gt; is the iteration contract. Any class implementing it can be used in foreach. List&lt;T&gt; and Set&lt;T&gt; implement it; arrays support foreach natively.</div>
+      <div class="code"><span class="cm">// custom iterable class</span>
+<span class="kw">class</span> Range : IEnumerable&lt;<span class="kw">int</span>&gt; {
+    <span class="kw">public int</span> from, to;
+    <span class="kw">void</span> init(<span class="kw">int</span> f, <span class="kw">int</span> t) {
+        <span class="kw">this</span>.from = f; <span class="kw">this</span>.to = t;
+    }
+    <span class="kw">int</span> Current()  { ... }
+    <span class="kw">bool</span> MoveNext() { ... }
+    <span class="kw">void</span> Reset()   { ... }
+}
+
+Range r = <span class="kw">new</span> Range();
+r.init(<span class="num">1</span>, <span class="num">5</span>);
+<span class="kw">foreach</span> (<span class="kw">int</span> n <span class="kw">in</span> r) { print(n); }</div>
+    </crono-quad>
+
+    <crono-quad col="4" row="5" fig="fig. 4.5 — collections example" sec="§4">
+      <div class="tag">example</div>
+      <div class="cell-title">word count</div>
+      <div class="cell-sub">Dict · List · string ops</div>
+      <div class="code"><span class="kw">string</span>[] words = String.Split(text, <span class="st">" "</span>);
+Dict&lt;<span class="kw">int</span>&gt; freq = Dict.New&lt;<span class="kw">int</span>&gt;();
+
+<span class="kw">foreach</span> (<span class="kw">string</span> w <span class="kw">in</span> words) {
+    <span class="kw">string</span> key = String.ToLower(w);
+    <span class="kw">if</span> (freq.ContainsKey(key)) {
+        freq.Set(key, freq.Get(key) + <span class="num">1</span>);
+    } <span class="kw">else</span> {
+        freq.Set(key, <span class="num">1</span>);
+    }
+}
+
+List&lt;<span class="kw">string</span>&gt; keys = freq.Keys();
+<span class="kw">foreach</span> (<span class="kw">string</span> k <span class="kw">in</span> keys) {
+    print(<span class="st">"${k}: ${freq.Get(k)}"</span>);
+}</div>
+    </crono-quad>
+
+    <!-- ════════════════════════════════ COL 5 — Runtime ═════════════════ -->
+
+    <crono-quad col="5" row="0" fig="fig. 5.0 — exceptions" sec="§5">
+      <div class="tag">runtime</div>
+      <div class="cell-title">exceptions</div>
+      <div class="cell-sub">try · catch · finally · throw</div>
+      <div class="code"><span class="kw">try</span> {
+    <span class="kw">int</span> result = riskyOp();
+    <span class="kw">if</span> (result < <span class="num">0</span>) {
+        <span class="kw">throw new</span> Exception(<span class="st">"negative"</span>);
+    }
+} <span class="kw">catch</span> (Exception e) {
+    print(<span class="st">"Error: "</span> + e.message);
+} <span class="kw">finally</span> {
+    cleanup();   <span class="cm">// always runs</span>
+}
+
+<span class="cm">// re-throw</span>
+<span class="kw">try</span> {
+    doWork();
+} <span class="kw">catch</span> (Exception e) {
+    log(e.message);
+    <span class="kw">throw</span> e;
+}</div>
+      <div class="kv-list">
+        <div class="kv-row"><div class="kv-k">throw</div><div class="kv-v">throws any Exception instance</div></div>
+        <div class="kv-row"><div class="kv-k">catch</div><div class="kv-v">catches Exception base class only — no typed hierarchy</div></div>
+        <div class="kv-row"><div class="kv-k">e.message</div><div class="kv-v">string message on the exception</div></div>
+        <div class="kv-row"><div class="kv-k">finally</div><div class="kv-v">always executes, success or exception</div></div>
+        <div class="kv-row"><div class="kv-k">propagation</div><div class="kv-v">unhandled exceptions bubble up the call stack</div></div>
+      </div>
+    </crono-quad>
+
+    <crono-quad col="5" row="1" fig="fig. 5.1 — string API" sec="§5">
+      <div class="tag">stdlib</div>
+      <div class="cell-title">String.*</div>
+      <div class="cell-sub">immutable operations · full API</div>
+      <div class="op-table">
+        <div class="op-head"><div class="op-h">method</div><div class="op-h">signature</div><div class="op-h">returns</div></div>
+        <div class="op-row"><div class="op-c">Length</div><div class="op-c mono">String.Length(s)</div><div class="op-c">int</div></div>
+        <div class="op-row"><div class="op-c">ToUpper</div><div class="op-c mono">String.ToUpper(s)</div><div class="op-c">string</div></div>
+        <div class="op-row"><div class="op-c">ToLower</div><div class="op-c mono">String.ToLower(s)</div><div class="op-c">string</div></div>
+        <div class="op-row"><div class="op-c">Substring</div><div class="op-c mono">String.Substring(s, start, len)</div><div class="op-c">string</div></div>
+        <div class="op-row"><div class="op-c">Contains</div><div class="op-c mono">String.Contains(s, sub)</div><div class="op-c">bool</div></div>
+        <div class="op-row"><div class="op-c">StartsWith</div><div class="op-c mono">String.StartsWith(s, prefix)</div><div class="op-c">bool</div></div>
+        <div class="op-row"><div class="op-c">IndexOf</div><div class="op-c mono">String.IndexOf(s, sub)</div><div class="op-c">int</div></div>
+        <div class="op-row"><div class="op-c">Replace</div><div class="op-c mono">String.Replace(s, from, to)</div><div class="op-c">string</div></div>
+        <div class="op-row"><div class="op-c">Trim</div><div class="op-c mono">String.Trim(s)</div><div class="op-c">string</div></div>
+        <div class="op-row"><div class="op-c">Split</div><div class="op-c mono">String.Split(s, delim)</div><div class="op-c">string[]</div></div>
+        <div class="op-row"><div class="op-c">Join</div><div class="op-c mono">String.Join(arr, sep)</div><div class="op-c">string</div></div>
+        <div class="op-row"><div class="op-c">Format</div><div class="op-c mono">String.Format(tpl, ...)</div><div class="op-c">string</div></div>
+      </div>
+    </crono-quad>
+
+    <crono-quad col="5" row="2" fig="fig. 5.2 — math" sec="§5">
+      <div class="tag">stdlib</div>
+      <div class="cell-title">Math.*</div>
+      <div class="cell-sub">arithmetic · trig · log · constants</div>
+      <div class="op-table">
+        <div class="op-head"><div class="op-h">method</div><div class="op-h">notes</div><div class="op-h"></div></div>
+        <div class="op-row"><div class="op-c">Abs · Min · Max</div><div class="op-c">basic numeric</div><div class="op-c"></div></div>
+        <div class="op-row"><div class="op-c">Sqrt · Pow</div><div class="op-c">Pow(base, exp)</div><div class="op-c"></div></div>
+        <div class="op-row"><div class="op-c">Round · Floor · Ceil</div><div class="op-c">rounding</div><div class="op-c"></div></div>
+        <div class="op-row"><div class="op-c">Sin · Cos · Tan</div><div class="op-c">radians</div><div class="op-c"></div></div>
+        <div class="op-row"><div class="op-c">Asin · Acos · Atan</div><div class="op-c">inverse trig</div><div class="op-c"></div></div>
+        <div class="op-row"><div class="op-c">Atan2(y, x)</div><div class="op-c">full-quadrant angle</div><div class="op-c"></div></div>
+        <div class="op-row"><div class="op-c">Log · Log10 · Exp</div><div class="op-c">logarithm / exp</div><div class="op-c"></div></div>
+        <div class="op-row"><div class="op-c">PI · E</div><div class="op-c">constants (double)</div><div class="op-c"></div></div>
+      </div>
+    </crono-quad>
+
+    <crono-quad col="5" row="3" fig="fig. 5.3 — IO" sec="§5">
+      <div class="tag">stdlib</div>
+      <div class="cell-title">IO.*</div>
+      <div class="cell-sub">files · directories · paths</div>
+      <div class="code"><span class="cm">// files</span>
+<span class="kw">string</span> text = IO.ReadFile(<span class="st">"data.txt"</span>);
+IO.WriteFile(<span class="st">"out.txt"</span>, text);
+IO.AppendFile(<span class="st">"log.txt"</span>, <span class="st">"entry\n"</span>);
+<span class="kw">bool</span> ok = IO.FileExists(<span class="st">"data.txt"</span>);
+IO.DeleteFile(<span class="st">"tmp.txt"</span>);
+
+<span class="cm">// directories</span>
+List&lt;<span class="kw">string</span>&gt; files = IO.ListDirectory(<span class="st">"./"</span>);
+IO.CreateDirectory(<span class="st">"output/"</span>);
+<span class="kw">bool</span> d = IO.DirectoryExists(<span class="st">"output/"</span>);
+
+<span class="cm">// paths</span>
+<span class="kw">string</span> full = Path.Combine(<span class="st">"a"</span>, <span class="st">"b.txt"</span>);
+<span class="kw">string</span> dir  = Path.GetDirectoryName(full);</div>
+    </crono-quad>
+
+    <crono-quad col="5" row="4" fig="fig. 5.4 — system" sec="§5">
+      <div class="tag">stdlib</div>
+      <div class="cell-title">Console · System · Time</div>
+      <div class="cell-sub">I/O · environment · timing</div>
+      <div class="code"><span class="cm">// Console</span>
+Console.Print(<span class="st">"hello"</span>);
+<span class="kw">string</span> line = Console.ReadLine();
+<span class="kw">string</span> all  = Console.ReadAll();
+<span class="kw">string</span>? ln  = Console.ReadLineTimeout(<span class="num">500</span>);
+
+<span class="cm">// System</span>
+<span class="kw">string</span>[] args = System.Args();
+<span class="kw">string</span> home   = System.GetEnv(<span class="st">"HOME"</span>);
+<span class="kw">string</span> path   = System.ScriptPath();
+System.Execute(<span class="st">"ls -la"</span>);
+System.Exit(<span class="num">0</span>);
+
+<span class="cm">// Time</span>
+<span class="kw">double</span> now = Time.Now();
+Time.Sleep(<span class="num">100</span>);          <span class="cm">// milliseconds</span>
+<span class="kw">long</span> ms    = Time.GetTicksMs();
+<span class="kw">string</span> ts  = Time.Format(now, <span class="st">"%Y-%m-%d"</span>);</div>
+    </crono-quad>
+
+    <crono-quad col="5" row="5" fig="fig. 5.5 — concurrency" sec="§5">
+      <div class="tag">concurrency</div>
+      <div class="cell-title">concurrency</div>
+      <div class="cell-sub">orbit · launch · Channel&lt;T&gt;</div>
+      <div class="code"><span class="cm">// orbit — coroutine, returns Channel&lt;T&gt;</span>
+<span class="kw">int</span> compute(<span class="kw">int</span> n) {
+    Time.Sleep(<span class="num">10</span>);
+    <span class="kw">return</span> n * n;
+}
+Channel&lt;<span class="kw">int</span>&gt; ch = <span class="kw">orbit</span> compute(<span class="num">5</span>);
+<span class="kw">int</span> result = ch.wait();   <span class="cm">// → 25</span>
+
+<span class="cm">// launch — fire-and-forget thread</span>
+<span class="kw">void</span> worker() { print(<span class="st">"background"</span>); }
+<span class="kw">launch</span> worker();
+
+<span class="cm">// channel messaging</span>
+Channel&lt;<span class="kw">string</span>&gt; pipe = Channel.New&lt;<span class="kw">string</span>&gt;();
+pipe.send(<span class="st">"hello"</span>);
+<span class="kw">string</span> msg = pipe.wait();</div>
+      <div class="kv-list">
+        <div class="kv-row"><div class="kv-k">orbit f()</div><div class="kv-v">spawns coroutine, returns Channel&lt;T&gt;</div></div>
+        <div class="kv-row"><div class="kv-k">launch f()</div><div class="kv-v">spawns thread, no return value</div></div>
+        <div class="kv-row"><div class="kv-k">ch.wait()</div><div class="kv-v">blocks until value is ready</div></div>
+        <div class="kv-row"><div class="kv-k">ch.send(v)</div><div class="kv-v">delivers value to channel</div></div>
+      </div>
+    </crono-quad>
+
+    <!-- ════════════════════════════════ COL 6 — Standard Library ═══════ -->
+
+    <crono-quad col="6" row="0" fig="fig. 6.0 — JSON" sec="§6">
+      <div class="tag">stdlib</div>
+      <div class="cell-title">JSON</div>
+      <div class="cell-sub">parse · serialize · path navigation</div>
+      <div class="code"><span class="cm">// parse JSON string → dynamic</span>
+<span class="kw">dynamic</span> obj = JSON.Parse(<span class="st">'{"name":"crono","v":1}'</span>);
+<span class="kw">string</span> name = obj[<span class="st">"name"</span>];  <span class="cm">// → "crono"</span>
+<span class="kw">int</span>    v    = obj[<span class="st">"v"</span>];     <span class="cm">// → 1</span>
+
+<span class="cm">// serialize Dict → JSON string</span>
+Dict&lt;<span class="kw">string</span>&gt; d = Dict.New&lt;<span class="kw">string</span>&gt;();
+d.Set(<span class="st">"status"</span>, <span class="st">"ok"</span>);
+<span class="kw">string</span> json = JSON.Serialize(d);
+
+<span class="cm">// deep path navigation</span>
+<span class="kw">dynamic</span> data = JSON.Parse(nested);
+<span class="kw">dynamic</span> city = JSON.Path(data, <span class="st">"user.address.city"</span>);</div>
+      <div class="kv-list">
+        <div class="kv-row"><div class="kv-k">JSON.Parse</div><div class="kv-v">string → dynamic (Dict-like)</div></div>
+        <div class="kv-row"><div class="kv-k">JSON.Serialize</div><div class="kv-v">object/Dict → JSON string</div></div>
+        <div class="kv-row"><div class="kv-k">JSON.Path</div><div class="kv-v">dot-path navigation on parsed JSON</div></div>
+      </div>
+    </crono-quad>
+
+    <crono-quad col="6" row="1" fig="fig. 6.1 — encoding" sec="§6">
+      <div class="tag">stdlib</div>
+      <div class="cell-title">Encoding</div>
+      <div class="cell-sub">Base64 · Hex · HMAC-SHA256</div>
+      <div class="code"><span class="cm">// Base64</span>
+<span class="kw">string</span> b64 = Encoding.Base64Encode(data);
+<span class="kw">string</span> raw = Encoding.Base64Decode(b64);
+
+<span class="cm">// Hex</span>
+<span class="kw">string</span> hex = Encoding.HexEncode(bytes);
+
+<span class="cm">// HMAC-SHA256</span>
+<span class="kw">string</span> mac = Encoding.HmacSha256(key, message);</div>
+      <div class="kv-list">
+        <div class="kv-row"><div class="kv-k">Base64Encode</div><div class="kv-v">bytes/string → base64 string</div></div>
+        <div class="kv-row"><div class="kv-k">Base64Decode</div><div class="kv-v">base64 string → original bytes</div></div>
+        <div class="kv-row"><div class="kv-k">HexEncode</div><div class="kv-v">bytes → lowercase hex string</div></div>
+        <div class="kv-row"><div class="kv-k">HmacSha256</div><div class="kv-v">key + message → MAC string</div></div>
+      </div>
+    </crono-quad>
+
+    <crono-quad col="6" row="2" fig="fig. 6.2 — random · hash" sec="§6">
+      <div class="tag">stdlib</div>
+      <div class="cell-title">Random · Hash</div>
+      <div class="cell-sub">pseudo-random · seeding · hashing</div>
+      <div class="code"><span class="cm">// Random</span>
+<span class="kw">int</span>    n = Random.NextInt(<span class="num">0</span>, <span class="num">100</span>);
+<span class="kw">double</span> d = Random.NextDouble();
+Random.Seed(<span class="num">42</span>);       <span class="cm">// deterministic</span>
+
+<span class="cm">// Hash</span>
+<span class="kw">int</span> h = Hash.Fnv1a(<span class="st">"hello"</span>);</div>
+      <div class="kv-list">
+        <div class="kv-row"><div class="kv-k">Random.NextInt(lo, hi)</div><div class="kv-v">int in [lo, hi)</div></div>
+        <div class="kv-row"><div class="kv-k">Random.NextDouble()</div><div class="kv-v">double in [0.0, 1.0)</div></div>
+        <div class="kv-row"><div class="kv-k">Random.Seed(n)</div><div class="kv-v">set deterministic seed</div></div>
+        <div class="kv-row"><div class="kv-k">Hash.Fnv1a(s)</div><div class="kv-v">FNV-1a hash of string → int</div></div>
+      </div>
+    </crono-quad>
+
+    <crono-quad col="6" row="3" fig="fig. 6.3 — assert" sec="§6">
+      <div class="tag">testing</div>
+      <div class="cell-title">Assert</div>
+      <div class="cell-sub">test assertions · compile-time checks</div>
+      <div class="code"><span class="cm">// assertions (throw on failure)</span>
+Assert.True(x == <span class="num">1</span>, <span class="st">"x must be 1"</span>);
+Assert.False(list.Count() == <span class="num">0</span>, <span class="st">"not empty"</span>);
+Assert.Fail(<span class="st">"should not reach here"</span>);
+
+<span class="cm">// typical test pattern</span>
+<span class="kw">void</span> testAdd() {
+    <span class="kw">int</span> result = add(<span class="num">2</span>, <span class="num">3</span>);
+    Assert.True(result == <span class="num">5</span>, <span class="st">"2+3 should be 5"</span>);
+}
+
+<span class="cm">// test runner (external C++ harness)</span>
+<span class="cm">// ASSERT_STDOUT(source, expected)</span>
+<span class="cm">// ASSERT_THROWS(source)</span>
+<span class="cm">// ASSERT_EQ(source, expected)</span></div>
+      <div class="note">Assert methods throw an Exception with the provided message on failure. The external test harness catches and reports them.</div>
+    </crono-quad>
+
+    <crono-quad col="6" row="4" fig="fig. 6.4 — GC API" sec="§6">
+      <div class="tag">runtime</div>
+      <div class="cell-title">GC API</div>
+      <div class="cell-sub">introspection · allocation · limits</div>
+      <div class="code"><span class="cm">// inspect heap</span>
+<span class="kw">int</span> bytes = GC.GetAllocatedBytes();
+<span class="kw">int</span> objs  = GC.GetObjectCount();
+
+print(<span class="st">"heap: ${bytes} bytes, ${objs} objects"</span>);
+
+<span class="cm">// typical use: leak detection in tests</span>
+<span class="kw">int</span> before = GC.GetObjectCount();
+doWork();
+<span class="kw">int</span> after = GC.GetObjectCount();
+Assert.True(after == before, <span class="st">"no leak"</span>);</div>
+      <div class="kv-list">
+        <div class="kv-row"><div class="kv-k">GetAllocatedBytes()</div><div class="kv-v">total heap bytes currently allocated</div></div>
+        <div class="kv-row"><div class="kv-k">GetObjectCount()</div><div class="kv-v">number of live GC-managed objects</div></div>
+        <div class="kv-row"><div class="kv-k">exec limit</div><div class="kv-v">CronoConfig::maxOpcodes → StepResult::ERROR</div></div>
+      </div>
+    </crono-quad>
+
+    <crono-quad col="6" row="5" fig="fig. 6.5 — buffer" sec="§6">
+      <div class="tag">stdlib</div>
+      <div class="cell-title">Buffer</div>
+      <div class="cell-sub">raw bytes · binary I/O · graphics</div>
+      <div class="cell-body">Buffer is a mutable byte array for low-level binary data. Used for network payloads, graphics buffers, and binary file I/O.</div>
+      <div class="code"><span class="cm">// create and fill</span>
+Buffer buf = Buffer.New(<span class="num">1024</span>);
+<span class="kw">int</span> len = buf.Count();
+
+<span class="cm">// byte-level access (via offset)</span>
+<span class="cm">// typically used with extensions:</span>
+Window.SetPixel(buf, x, y, r, g, b);
+
+<span class="cm">// write to file</span>
+IO.WriteFile(<span class="st">"output.bin"</span>, buf);</div>
+      <div class="kv-list">
+        <div class="kv-row"><div class="kv-k">Buffer.New(size)</div><div class="kv-v">allocate buffer of given byte size</div></div>
+        <div class="kv-row"><div class="kv-k">buf.Count()</div><div class="kv-v">size in bytes</div></div>
+        <div class="kv-row"><div class="kv-k">use case</div><div class="kv-v">graphics · binary I/O · native extension interop</div></div>
+      </div>
+    </crono-quad>
+
+    <!-- ════════════════════════════════ COL 7 — Extensions & Interop ═══ -->
+
+    <crono-quad col="7" row="0" fig="fig. 7.0 — extensions" sec="§7">
+      <div class="tag">extensions</div>
+      <div class="cell-title">extensions</div>
+      <div class="cell-sub">native C++ modules · type-safe at compile time</div>
+      <div class="code"><span class="cm">// declare extension — loads at runtime</span>
+<span class="kw">extension</span> <span class="st">"crono_websocket"</span>;
+<span class="kw">extension</span> <span class="st">"crono_http"</span>;
+
+<span class="cm">// use the extension API</span>
+<span class="kw">int</span> conn = WS.Connect(<span class="st">"wss://api.example.com"</span>, <span class="st">"{}"</span>);
+WS.Send(conn, <span class="st">'{"action":"ping"}'</span>);
+<span class="kw">string</span> msg = WS.Receive(conn, <span class="num">5000</span>);
+WS.Close(conn);</div>
+      <div class="kv-list">
+        <div class="kv-row"><div class="kv-k">declaration</div><div class="kv-v">extension "name"; — relative or absolute path</div></div>
+        <div class="kv-row"><div class="kv-k">type checking</div><div class="kv-v">compile-time — signatures declared in C++ manifest</div></div>
+        <div class="kv-row"><div class="kv-k">loading</div><div class="kv-v">dynamic link at runtime via dlopen/LoadLibrary</div></div>
+        <div class="kv-row"><div class="kv-k">NativeFunction</div><div class="kv-v">{"name","returnType",{paramTypes},fnPointer}</div></div>
+      </div>
+    </crono-quad>
+
+    <crono-quad col="7" row="1" fig="fig. 7.1 — network" sec="§7">
+      <div class="tag">extensions</div>
+      <div class="cell-title">WebSocket · HTTP</div>
+      <div class="cell-sub">crono_websocket · crono_http</div>
+      <div class="code"><span class="cm">// WebSocket</span>
+<span class="kw">extension</span> <span class="st">"crono_websocket"</span>;
+<span class="kw">int</span> conn = WS.Connect(url, opts);
+WS.Send(conn, payload);
+<span class="kw">string</span> msg  = WS.Receive(conn, timeoutMs);
+<span class="kw">bool</span>   more = WS.Poll(conn);
+WS.Close(conn);
+
+<span class="cm">// HTTP</span>
+<span class="kw">extension</span> <span class="st">"crono_http"</span>;
+Dict&lt;<span class="kw">string</span>&gt; headers = Dict.New&lt;<span class="kw">string</span>&gt;();
+headers.Set(<span class="st">"Authorization"</span>, <span class="st">"Bearer ${token}"</span>);
+
+<span class="kw">string</span> body = HTTP.Get(url, headers);
+<span class="kw">string</span> res  = HTTP.Post(url, payload, headers);</div>
+    </crono-quad>
+
+    <crono-quad col="7" row="2" fig="fig. 7.2 — system ext" sec="§7">
+      <div class="tag">extensions</div>
+      <div class="cell-title">Process · Window · JS</div>
+      <div class="cell-sub">crono_process · crono_window · crono_js</div>
+      <div class="code"><span class="cm">// Process</span>
+<span class="kw">extension</span> <span class="st">"crono_process"</span>;
+Process.Run(<span class="st">"ls -la"</span>);
+
+<span class="cm">// Window (graphics)</span>
+<span class="kw">extension</span> <span class="st">"crono_window"</span>;
+Window.Open(<span class="num">800</span>, <span class="num">600</span>, <span class="st">"Demo"</span>);
+<span class="kw">while</span> (!Window.IsClosed()) {
+    Buffer buf = Buffer.New(<span class="num">800</span> * <span class="num">600</span> * <span class="num">4</span>);
+    <span class="cm">// ... draw pixels into buf ...</span>
+    Window.Update(buf);
+}
+Window.Close();
+
+<span class="cm">// JS embedding</span>
+<span class="kw">extension</span> <span class="st">"crono_js"</span>;
+JS.Eval(<span class="st">"console.log('hello from JS')"</span>);</div>
+    </crono-quad>
+
+    <crono-quad col="7" row="3" fig="fig. 7.3 — dynamic FFI" sec="§7">
+      <div class="tag">interop</div>
+      <div class="cell-title">dynamic FFI</div>
+      <div class="cell-sub">Dynamic.Load · runtime DLL binding · untyped</div>
+      <div class="code"><span class="cm">// load any shared library at runtime</span>
+<span class="kw">dynamic</span> lib = Dynamic.Load(<span class="st">"ucrtbase.dll"</span>);
+
+<span class="cm">// call C functions by name</span>
+<span class="kw">double</span> s = lib.sin(<span class="num">1.5707963</span>);  <span class="cm">// → 1.0</span>
+<span class="kw">double</span> p = lib.pow(<span class="num">2.0</span>, <span class="num">10.0</span>); <span class="cm">// → 1024.0</span>
+
+<span class="cm">// any cdecl/stdcall export works</span>
+<span class="kw">dynamic</span> mylib = Dynamic.Load(<span class="st">"mylib.so"</span>);
+<span class="kw">int</span> result = mylib.my_function(<span class="num">42</span>);</div>
+      <div class="kv-list">
+        <div class="kv-row"><div class="kv-k">Dynamic.Load</div><div class="kv-v">loads shared lib, returns dynamic handle</div></div>
+        <div class="kv-row"><div class="kv-k">resolution</div><div class="kv-v">symbol lookup at call time — no compile check</div></div>
+        <div class="kv-row"><div class="kv-k">arg types</div><div class="kv-v">int · long · float · double · string</div></div>
+        <div class="kv-row"><div class="kv-k">vs extension</div><div class="kv-v">extension: typed + compile-checked · FFI: runtime only</div></div>
+      </div>
+    </crono-quad>
+
+    <crono-quad col="7" row="4" fig="fig. 7.4 — C API" sec="§7">
+      <div class="tag">interop</div>
+      <div class="cell-title">C API</div>
+      <div class="cell-sub">embed crono-vm · native function registration</div>
+      <div class="code"><span class="cm">// create and configure VM</span>
+CronoVM* vm = crono_vm_create(&amp;config);
+crono_vm_load(vm, bytecode, length);
+
+<span class="cm">// register native function</span>
+NativeFunction fn = {
+  <span class="st">"Math.Sin"</span>, <span class="st">"double"</span>, {<span class="st">"double"</span>},
+  [](Memory* mem, ...) { <span class="cm">/* impl */</span> }
+};
+crono_vm_register_native(vm, &amp;fn);
+
+<span class="cm">// run</span>
+StepResult r = crono_vm_run(vm);
+
+crono_vm_destroy(vm);</div>
+      <div class="kv-list">
+        <div class="kv-row"><div class="kv-k">crono_vm_create</div><div class="kv-v">allocate VM with CronoConfig</div></div>
+        <div class="kv-row"><div class="kv-k">crono_vm_load</div><div class="kv-v">load compiled bytecode</div></div>
+        <div class="kv-row"><div class="kv-k">crono_vm_run</div><div class="kv-v">execute until halt or error</div></div>
+        <div class="kv-row"><div class="kv-k">crono_vm_step</div><div class="kv-v">single-step execution</div></div>
+        <div class="kv-row"><div class="kv-k">crono_vm_destroy</div><div class="kv-v">teardown + GC flush</div></div>
+      </div>
+    </crono-quad>
+
+    <crono-quad col="7" row="5" fig="fig. 7.5 — C# interop" sec="§7">
+      <div class="tag">interop</div>
+      <div class="cell-title">C# interop</div>
+      <div class="cell-sub">CronoVM.cs · call crono from .NET</div>
+      <div class="cell-body">A C# wrapper at interop/csharp/ exposes the crono-vm C API to .NET applications. Allows compiling and running crono-sharp programs from C# code — useful for embedding crono-sharp as a scripting layer in a .NET host.</div>
+      <div class="kv-list">
+        <div class="kv-row"><div class="kv-k">CronoVM.cs</div><div class="kv-v">P/Invoke wrapper over the C API</div></div>
+        <div class="kv-row"><div class="kv-k">InteropTests.cs</div><div class="kv-v">test suite for the C# binding</div></div>
+        <div class="kv-row"><div class="kv-k">use case</div><div class="kv-v">embed crono-sharp as a scripting engine in a .NET app</div></div>
+        <div class="kv-row"><div class="kv-k">status</div><div class="kv-v">basic / legacy — not the primary integration path</div></div>
+      </div>
+      <div class="note">For most embedding use cases, the C API (fig. 7.4) is the primary path. The C# wrapper is a thin convenience layer over it.</div>
+    </crono-quad>
 
   </div><!-- #canvas -->
 </div><!-- #wrap -->
