@@ -1,74 +1,294 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>crono-sharp — crono-lang</title>
-  <meta name="description" content="crono-sharp: a statically typed language targeting crono-vm.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne+Mono&family=Figtree:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="docs.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>crono-sharp — language reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne+Mono&family=Figtree:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="crono-canvas.css">
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav>
+<div id="wrap" class="wrap">
+
+  <nav class="nav">
     <a href="/" class="nav-logo">
-      <svg width="15" height="20" viewBox="-2 -2 24 24" preserveAspectRatio="none" aria-hidden="true">
+      <svg width="18" height="24" viewBox="-2 -2 24 24" preserveAspectRatio="none" aria-hidden="true">
         <g transform="rotate(-45,10,10)">
           <rect x="2"  y="2"  width="8" height="8" fill="#c07848"/>
           <rect x="2"  y="10" width="8" height="8" fill="#fefdfa"/>
           <rect x="10" y="10" width="8" height="8" fill="#c07848"/>
         </g>
       </svg>
-      crono<span class="accent">-lang</span>
+      <span>crono<span class="accent">-sharp</span></span>
     </a>
-    <div class="nav-links">
-      <a href="crono-vm.html">crono-vm</a>
-      <a href="crono-sharp.html" class="nav-active">crono-sharp</a>
-    </div>
+    <div class="nav-section">language reference</div>
   </nav>
 
-  <div class="docs-layout">
-    <!-- SIDEBAR -->
-    <aside class="docs-sidebar">
-      <div class="sidebar-section">
-        <div class="sidebar-label">overview</div>
-        <a href="#introduction" class="sidebar-link">introduction</a>
-        <a href="#syntax" class="sidebar-link">syntax</a>
-        <a href="#type-system" class="sidebar-link">type system</a>
-      </div>
-      <div class="sidebar-section">
-        <div class="sidebar-label">reference</div>
-        <a href="#classes" class="sidebar-link">classes & objects</a>
-        <a href="#generics" class="sidebar-link">generics</a>
-        <a href="#concurrency" class="sidebar-link">concurrency</a>
-        <a href="#stdlib" class="sidebar-link">standard library</a>
-      </div>
-    </aside>
+  <div id="canvas" class="canvas" data-cols="8" data-rows="6">
 
-    <!-- CONTENT -->
-    <main class="docs-content">
-      <div class="docs-header">
-        <div class="docs-tag">language</div>
-        <h1 class="docs-title">crono-sharp</h1>
-        <p class="docs-subtitle">
-          A statically typed, C-like language that compiles to crono-vm bytecode.
-          Classes, inheritance, generics, interfaces, and a full LSP built in.
-        </p>
+    <div class="frame">
+      <div class="cbr cbr--tl"></div>
+      <div class="cbr cbr--tr"></div>
+      <div class="cbr cbr--bl"></div>
+      <div class="cbr cbr--br"></div>
+      <div class="tick tick--tc"></div>
+      <div class="tick tick--bc"></div>
+      <div class="tick tick--lc"></div>
+      <div class="tick tick--rc"></div>
+    </div>
+
+    <!-- ════════════════════════════════ COL 0 — Generalities ════════════ -->
+
+    <crono-quad col="0" row="0" fig="fig. 0.0 — language" sec="§0">
+      <div class="tag">language</div>
+      <div class="cell-title">crono<span class="accent">-sharp</span></div>
+      <div class="cell-sub">C#-inspired · statically typed · compiles to crono-vm</div>
+      <div class="stats">
+        <div class="stat"><div class="stat-v">.crono</div><div class="stat-k">extension</div></div>
+        <div class="stat"><div class="stat-v">8</div><div class="stat-k">passes</div></div>
+        <div class="stat"><div class="stat-v">C#</div><div class="stat-k">syntax</div></div>
+        <div class="stat"><div class="stat-v">v1</div><div class="stat-k">format</div></div>
       </div>
-
-      <div class="docs-placeholder">
-        <span>documentation in progress</span>
+      <div class="cell-body">A statically-typed, C#-flavored language that compiles to crono-vm bytecode. Classes, interfaces, generics, exceptions, and lightweight concurrency — in a clean multi-pass compiler. Borrows C# syntax while targeting a purpose-built VM.</div>
+      <div class="kv-list">
+        <div class="kv-row"><div class="kv-k">typing</div><div class="kv-v">static, with type inference</div></div>
+        <div class="kv-row"><div class="kv-k">OOP</div><div class="kv-v">classes · interfaces · single inheritance</div></div>
+        <div class="kv-row"><div class="kv-k">generics</div><div class="kv-v">functions + collections (monomorphic)</div></div>
+        <div class="kv-row"><div class="kv-k">concurrency</div><div class="kv-v">orbit / launch / channels</div></div>
+        <div class="kv-row"><div class="kv-k">FFI</div><div class="kv-v">native extensions + dynamic FFI</div></div>
+        <div class="kv-row"><div class="kv-k">GC</div><div class="kv-v">mark-and-sweep, precise roots</div></div>
       </div>
-    </main>
-  </div>
+    </crono-quad>
 
-  <footer>
-    <span class="footer-sig">Made with <span class="spade">♠</span> by Racso</span>
-  </footer>
+    <crono-quad col="0" row="1" fig="fig. 0.1 — pipeline" sec="§0">
+      <div class="tag">compiler</div>
+      <div class="cell-title">pipeline</div>
+      <div class="cell-sub">source → 8 passes → bytecode</div>
+      <div class="arch">
+        <div class="arch-node"><div class="atag">input</div>source (.crono)</div>
+        <div class="arch-conn"></div>
+        <div class="arch-node"><div class="atag">pass 1–2</div>Scanner → Parser → AST</div>
+        <div class="arch-conn"></div>
+        <div class="arch-node"><div class="atag">pass 3–4</div>Symbol Binding → Type Checker</div>
+        <div class="arch-conn"></div>
+        <div class="arch-node"><div class="atag">pass 5</div>Lowering — generators → state machines · foreach expansion</div>
+        <div class="arch-conn"></div>
+        <div class="arch-node"><div class="atag">pass 6–7</div>Symbol Binding + Type Checker (re-run post-lowering)</div>
+        <div class="arch-conn"></div>
+        <div class="arch-node"><div class="atag">pass 8</div>MIR Lowerer → MIR VM Lowerer → bytecode</div>
+      </div>
+      <div class="note">Passes 3–4 run twice — before and after AST transforms — so generators and foreach expansions are fully type-checked.</div>
+    </crono-quad>
 
+    <crono-quad col="0" row="2" fig="fig. 0.2 — modules" sec="§0">
+      <div class="tag">modules</div>
+      <div class="cell-title">imports</div>
+      <div class="cell-sub">multi-file · extension loading</div>
+      <div class="code"><span class="cm">// merge another .crono file into this compilation unit</span>
+<span class="kw">import</span> <span class="st">"math_utils.crono"</span>;
+<span class="kw">import</span> <span class="st">"collections/linked_list.crono"</span>;
+
+<span class="cm">// load a native C++ extension at runtime</span>
+<span class="kw">extension</span> <span class="st">"crono_websocket"</span>;
+<span class="kw">extension</span> <span class="st">"crono_http"</span>;</div>
+      <div class="kv-list">
+        <div class="kv-row"><div class="kv-k">import</div><div class="kv-v">merges .crono file; symbols share scope</div></div>
+        <div class="kv-row"><div class="kv-k">extension</div><div class="kv-v">loads native C++ module at runtime</div></div>
+        <div class="kv-row"><div class="kv-k">resolution</div><div class="kv-v">relative path from script file</div></div>
+        <div class="kv-row"><div class="kv-k">multiple</div><div class="kv-v">supported; circular imports are not</div></div>
+      </div>
+    </crono-quad>
+
+    <crono-quad col="0" row="3" fig="fig. 0.3 — memory" sec="§0">
+      <div class="tag">runtime</div>
+      <div class="cell-title">memory &amp; GC</div>
+      <div class="cell-sub">mark-and-sweep · precise roots · string interning</div>
+      <div class="cell-body">Primitives (int, long, float, double, bool) are stored by value in VM registers. Objects, strings, and arrays are heap-allocated reference types tracked by the garbage collector.</div>
+      <div class="kv-list">
+        <div class="kv-row"><div class="kv-k">algorithm</div><div class="kv-v">mark-and-sweep</div></div>
+        <div class="kv-row"><div class="kv-k">roots</div><div class="kv-v">precise — all live references are known</div></div>
+        <div class="kv-row"><div class="kv-k">strings</div><div class="kv-v">interned — identical literals share one object</div></div>
+        <div class="kv-row"><div class="kv-k">value types</div><div class="kv-v">int · long · float · double · bool</div></div>
+        <div class="kv-row"><div class="kv-k">reference types</div><div class="kv-v">string · object · array · dynamic</div></div>
+        <div class="kv-row"><div class="kv-k">GC API</div><div class="kv-v">GC.GetAllocatedBytes() · GC.GetObjectCount()</div></div>
+      </div>
+    </crono-quad>
+
+    <crono-quad col="0" row="4" fig="fig. 0.4 — limits" sec="§0">
+      <div class="tag">compatibility</div>
+      <div class="cell-title">vs C#</div>
+      <div class="cell-sub">what's in · what's out</div>
+      <div class="op-table">
+        <div class="op-head">
+          <div class="op-h">in crono-sharp</div>
+          <div class="op-h">not implemented</div>
+          <div class="op-h"></div>
+        </div>
+        <div class="op-row"><div class="op-c">classes + interfaces</div><div class="op-c">get/set properties</div><div class="op-c"></div></div>
+        <div class="op-row"><div class="op-c">generics (monomorphic)</div><div class="op-c">delegates / events</div><div class="op-c"></div></div>
+        <div class="op-row"><div class="op-c">try / catch / finally</div><div class="op-c">LINQ</div><div class="op-c"></div></div>
+        <div class="op-row"><div class="op-c">string interpolation</div><div class="op-c">async/await → orbit instead</div><div class="op-c"></div></div>
+        <div class="op-row"><div class="op-c">nullable T?</div><div class="op-c">operator overloading</div><div class="op-c"></div></div>
+        <div class="op-row"><div class="op-c">var · const · dynamic</div><div class="op-c">pattern matching / tuples</div><div class="op-c"></div></div>
+        <div class="op-row"><div class="op-c">orbit / launch / channels</div><div class="op-c">?.  ??  null-aware operators</div><div class="op-c"></div></div>
+        <div class="op-row"><div class="op-c">params variadic</div><div class="op-c">reflection · attributes</div><div class="op-c"></div></div>
+      </div>
+    </crono-quad>
+
+    <crono-quad col="0" row="5" fig="fig. 0.5 — hello world" sec="§0">
+      <div class="tag">example</div>
+      <div class="cell-title">hello, world</div>
+      <div class="cell-sub">first program · classes · interpolation</div>
+      <div class="code"><span class="kw">class</span> Greeter {
+    <span class="kw">public string</span> name;
+
+    <span class="kw">void</span> init(<span class="kw">string</span> n) {
+        <span class="kw">this</span>.name = n;
+    }
+
+    <span class="kw">string</span> greet() {
+        <span class="kw">return</span> <span class="st">"Hello, ${this.name}!"</span>;
+    }
+}
+
+Greeter g = <span class="kw">new</span> Greeter();
+g.init(<span class="st">"crono"</span>);
+print(g.greet());   <span class="cm">// → Hello, crono!</span>
+
+<span class="kw">var</span> msg = g.greet();      <span class="cm">// type inferred</span>
+<span class="kw">const int</span> VER = <span class="num">1</span>;        <span class="cm">// immutable</span></div>
+    </crono-quad>
+
+    <!-- ════════════════════════════════ COL 1 — Types ═══════════════════ -->
+
+    <crono-quad col="1" row="0" fig="fig. 1.0 — primitives" sec="§1">
+      <div class="tag">types</div>
+      <div class="cell-title">primitives</div>
+      <div class="cell-sub">value types · stack-allocated · no boxing</div>
+      <div class="type-table">
+        <div class="type-row"><div class="type-c">int</div><div class="type-c center">32 bit</div><div class="type-c">signed integer</div></div>
+        <div class="type-row"><div class="type-c">long</div><div class="type-c center">64 bit</div><div class="type-c">signed integer</div></div>
+        <div class="type-row"><div class="type-c">float</div><div class="type-c center">32 bit</div><div class="type-c">IEEE 754 single</div></div>
+        <div class="type-row"><div class="type-c">double</div><div class="type-c center">64 bit</div><div class="type-c">IEEE 754 double</div></div>
+        <div class="type-row"><div class="type-c">bool</div><div class="type-c center">—</div><div class="type-c">true / false</div></div>
+        <div class="type-row"><div class="type-c">string</div><div class="type-c center">ref</div><div class="type-c">immutable, interned</div></div>
+        <div class="type-row"><div class="type-c">void</div><div class="type-c center">—</div><div class="type-c">no-value return type</div></div>
+        <div class="type-row"><div class="type-c">dynamic</div><div class="type-c center">ref</div><div class="type-c">runtime-typed, no static check</div></div>
+      </div>
+    </crono-quad>
+
+    <crono-quad col="1" row="1" fig="fig. 1.1 — arrays" sec="§1">
+      <div class="tag">types</div>
+      <div class="cell-title">arrays</div>
+      <div class="cell-sub">T[] · fixed-size · multidimensional · Array.*</div>
+      <div class="code"><span class="cm">// literal</span>
+<span class="kw">int</span>[] nums  = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>];
+<span class="kw">string</span>[] words = [<span class="st">"a"</span>, <span class="st">"b"</span>];
+
+<span class="cm">// access</span>
+<span class="kw">int</span> x = nums[<span class="num">0</span>];
+nums[<span class="num">1</span>] = <span class="num">99</span>;
+<span class="kw">int</span> len = Array.Count(nums);
+
+<span class="cm">// multidimensional</span>
+<span class="kw">int</span>[][] grid = [[<span class="num">1</span>,<span class="num">2</span>],[<span class="num">3</span>,<span class="num">4</span>]];
+<span class="kw">int</span> v = grid[<span class="num">0</span>][<span class="num">1</span>];  <span class="cm">// → 2</span>
+
+<span class="cm">// foreach</span>
+<span class="kw">foreach</span> (<span class="kw">int</span> n <span class="kw">in</span> nums) { print(n); }</div>
+      <div class="note">Arrays are fixed-size. For resizable sequences use List&lt;T&gt;. Out-of-bounds access throws at runtime.</div>
+    </crono-quad>
+
+    <crono-quad col="1" row="2" fig="fig. 1.2 — complex types" sec="§1">
+      <div class="tag">types</div>
+      <div class="cell-title">complex types</div>
+      <div class="cell-sub">class · interface · nullable · generic</div>
+      <div class="code"><span class="cm">// class instance</span>
+Animal a = <span class="kw">new</span> Animal();
+
+<span class="cm">// interface reference</span>
+IGreeter g = <span class="kw">new</span> Hello();
+
+<span class="cm">// nullable T? — may hold nil</span>
+<span class="kw">string</span>? name = <span class="kw">nil</span>;
+<span class="kw">if</span> (name != <span class="kw">nil</span>) { print(name); }
+
+<span class="cm">// generic collections</span>
+List&lt;<span class="kw">int</span>&gt; items = List.New&lt;<span class="kw">int</span>&gt;();
+Dict&lt;<span class="kw">string</span>&gt; map  = Dict.New&lt;<span class="kw">string</span>&gt;();
+
+<span class="cm">// dynamic</span>
+<span class="kw">dynamic</span> data = JSON.Parse(json);
+<span class="kw">string</span> val   = data[<span class="st">"key"</span>];</div>
+    </crono-quad>
+
+    <crono-quad col="1" row="3" fig="fig. 1.3 — inference" sec="§1">
+      <div class="tag">types</div>
+      <div class="cell-title">inference</div>
+      <div class="cell-sub">var · const · dynamic · type locking</div>
+      <div class="code"><span class="cm">// var — inferred at declaration, then locked</span>
+<span class="kw">var</span> x     = <span class="num">42</span>;          <span class="cm">// int</span>
+<span class="kw">var</span> name  = <span class="st">"Rex"</span>;       <span class="cm">// string</span>
+<span class="kw">var</span> items = List.New&lt;<span class="kw">int</span>&gt;();
+
+<span class="cm">// const — immutable, must initialize</span>
+<span class="kw">const int</span>    MAX = <span class="num">100</span>;
+<span class="kw">const string</span> APP = <span class="st">"crono-sharp"</span>;
+
+<span class="cm">// dynamic — no static type checking</span>
+<span class="kw">dynamic</span> obj    = JSON.Parse(json);
+<span class="kw">dynamic</span> result = obj[<span class="st">"status"</span>];</div>
+      <div class="note">var locks to the inferred type — assigning a different type later is a compile error. dynamic opts out of all static checks.</div>
+    </crono-quad>
+
+    <crono-quad col="1" row="4" fig="fig. 1.4 — operators" sec="§1">
+      <div class="tag">operators</div>
+      <div class="cell-title">operators</div>
+      <div class="cell-sub">arithmetic · logic · bitwise · compound</div>
+      <div class="kv-list">
+        <div class="kv-row"><div class="kv-k">arithmetic</div><div class="kv-v">+  -  *  /  %</div></div>
+        <div class="kv-row"><div class="kv-k">comparison</div><div class="kv-v">==  !=  &lt;  &lt;=  &gt;  &gt;=</div></div>
+        <div class="kv-row"><div class="kv-k">logical</div><div class="kv-v">&amp;&amp;  ||  !</div></div>
+        <div class="kv-row"><div class="kv-k">bitwise</div><div class="kv-v">&amp;  |  ^  ~  &lt;&lt;  &gt;&gt;</div></div>
+        <div class="kv-row"><div class="kv-k">assignment</div><div class="kv-v">=  +=  -=  *=  /=  %=</div></div>
+        <div class="kv-row"><div class="kv-k">unary</div><div class="kv-v">-  !  ~  ++  --  (postfix)</div></div>
+        <div class="kv-row"><div class="kv-k">string +</div><div class="kv-v">concatenates two strings</div></div>
+        <div class="kv-row"><div class="kv-k">not in crono#</div><div class="kv-v">?.  ??  overloading</div></div>
+      </div>
+    </crono-quad>
+
+    <crono-quad col="1" row="5" fig="fig. 1.5 — strings" sec="§1">
+      <div class="tag">types</div>
+      <div class="cell-title">strings</div>
+      <div class="cell-sub">interpolation · verbatim · String.*</div>
+      <div class="code"><span class="cm">// interpolation</span>
+<span class="kw">string</span> s = <span class="st">"${name} v${ver}"</span>;
+
+<span class="cm">// verbatim (no escape processing)</span>
+<span class="kw">string</span> p = @<span class="st">"C:\Users\file.txt"</span>;
+
+<span class="cm">// String.*</span>
+String.Length(s)
+String.ToUpper(s)   String.ToLower(s)
+String.Substring(s, start, len)
+String.Contains(s, sub)
+String.StartsWith(s, prefix)
+String.IndexOf(s, sub)
+String.Replace(s, from, to)
+String.Trim(s)
+String.Split(s, delim)
+String.Join(arr, sep)
+String.Format(template, ...)</div>
+    </crono-quad>
+
+    <!-- cols 2–7: empty (content TBD) ─────────────────────────────────── -->
+
+  </div><!-- #canvas -->
+</div><!-- #wrap -->
+
+<script src="crono-canvas.js" defer></script>
 </body>
 </html>
