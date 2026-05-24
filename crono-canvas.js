@@ -173,7 +173,52 @@ window.addEventListener('mouseup', () => {
   _wrap.classList.remove('panning');
 });
 
+// ── Minimap ───────────────────────────────────────────────────────────────────
+
+function _buildMinimap() {
+  const grids = document.querySelectorAll('.mm-grid');
+  if (!grids.length) return;
+
+  // Build lookup col,row → fig label
+  const quadMap = {};
+  document.querySelectorAll('.quad').forEach(q => {
+    const c = +q.dataset.col;
+    const r = +q.dataset.row;
+    const figEl = q.querySelector('.quad-fig');
+    const fig = figEl ? figEl.textContent.trim() : '';
+    quadMap[`${c},${r}`] = fig;
+  });
+
+  grids.forEach(grid => {
+    grid.style.gridTemplateColumns = `repeat(${COLS}, 1fr)`;
+    grid.innerHTML = '';
+
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const fig = quadMap[`${c},${r}`] || '';
+        // Parse "fig. 0.0 — overview" → num="0.0", label="overview"
+        const m = fig.match(/fig\.\s*([\d.]+)\s*[—\-]\s*(.*)/i);
+        const num   = m ? m[1] : `${c}.${r}`;
+        const label = m ? m[2] : fig;
+
+        const cell = document.createElement('div');
+        cell.className = 'mm-cell' + (c === 0 && r === 0 ? ' mm-self' : '');
+        cell.title = fig || `${c},${r}`;
+        cell.innerHTML =
+          `<div class="mm-num">${num}</div>` +
+          `<div class="mm-label">${label}</div>`;
+        cell.addEventListener('click', () => _snapTo(c, r));
+        grid.appendChild(cell);
+      }
+    }
+  });
+}
+
+// Expose for external callers (e.g. inline scripts on non-shared pages)
+window.snapTo = _snapTo;
+
 // ── Init ─────────────────────────────────────────────────────────────────────
 
 _setup();
+_buildMinimap();
 window.addEventListener('resize', () => { _setup(); _updateActive(); });

@@ -458,6 +458,59 @@ html, body {
 
 .badge.core { border-color: var(--crono); color: var(--crono); }
 
+/* ── MINIMAP ─────────────────────────────────────────────────────────────── */
+
+.minimap {
+  margin-bottom: clamp(10px, calc(var(--qh, 400px) * 0.024), 16px);
+  flex-shrink: 0;
+}
+
+.mm-grid {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+}
+
+.mm-cell {
+  background: var(--void);
+  border: 1px solid var(--n3);
+  cursor: pointer;
+  padding: 3px 4px 4px;
+  overflow: hidden;
+  transition: background 0.12s, border-color 0.12s;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 1px;
+}
+
+.mm-cell:hover {
+  background: var(--n2);
+  border-color: var(--n4);
+}
+
+.mm-cell.mm-self {
+  border-color: var(--crono);
+}
+
+.mm-num {
+  font-size: 6px;
+  color: var(--crono);
+  letter-spacing: 0.05em;
+  line-height: 1;
+}
+
+.mm-label {
+  font-size: 5.5px;
+  color: var(--n4);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+  font-family: 'Figtree', sans-serif;
+  font-weight: 400;
+}
+
 /* button */
 .btn {
   font-family: 'Syne Mono', monospace;
