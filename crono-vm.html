@@ -633,18 +633,19 @@ html, body {
   background: var(--void);
   border: 1px solid var(--n3);
   cursor: pointer;
-  padding: 3px 4px 4px;
+  aspect-ratio: 1 / 1;
+  padding: 4px 5px 5px;
   overflow: hidden;
   transition: background 0.12s, border-color 0.12s;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  gap: 1px;
+  gap: 2px;
 }
 .mm-cell:hover { background: var(--n2); border-color: var(--n4); }
 .mm-cell.mm-self { border-color: var(--crono); }
-.mm-num  { font-size: 6px; color: var(--crono); letter-spacing: 0.05em; line-height: 1; }
-.mm-label { font-size: 5.5px; color: var(--n4); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; font-family: 'Figtree', sans-serif; font-weight: 400; }
+.mm-num  { font-size: 7px; color: var(--crono); letter-spacing: 0.05em; line-height: 1; flex-shrink: 0; }
+.mm-label { font-size: 6px; color: var(--n4); white-space: normal; line-height: 1.3; font-family: 'Figtree', sans-serif; font-weight: 400; overflow: hidden; }
 </style>
 </head>
 <body>
