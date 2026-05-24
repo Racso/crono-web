@@ -1,0 +1,20 @@
+# crono-lang
+
+crono-lang is a programming language project consisting of two components:
+
+- **crono-vm** — a register-based bytecode virtual machine (C++, computed-goto dispatch, mark-and-sweep GC, native extension API)
+- **crono-sharp** — a statically-typed, C#-inspired language that compiles to crono-vm (classes, generics, exceptions, cooperative concurrency via orbit/launch, native FFI)
+
+Source: https://github.com/Racso/crono-lang
+
+## Documentation
+
+Full reference documentation:
+
+- https://crono.rac.so/vm.md — crono-vm: architecture, instruction set, value types, GC, C API, known limitations
+- https://crono.rac.so/sharp.md — crono-sharp: syntax, types, classes, generics, concurrency, FFI, standard library
+
+Interactive canvas references (human-oriented):
+
+- https://crono.rac.so/vm — crono-vm visual reference
+- https://crono.rac.so/sharp — crono-sharp visual reference
